@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Vidhi Chakra"/>
+<meta name="theme-color" content="#060300"/>
+<title>विधि चक्र — Template Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#060300;color:#F0E0C0;font-family:'Philosopher',Georgia,serif;min-height:100vh}
+body{padding:18px 14px 60px}
+
+#header{text-align:center;margin-bottom:20px}
+#header h1{font-size:22px;color:#E8A020;letter-spacing:4px}
+#header p{font-size:9px;color:#422010;letter-spacing:5px;text-transform:uppercase;margin-top:3px}
+
+#tabs{display:flex;gap:6px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;margin-bottom:20px;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:6px 13px;font-family:'Philosopher',serif;font-size:12px;font-weight:700;cursor:pointer;border-radius:3px;transition:all 0.2s;background:transparent;white-space:nowrap;flex-shrink:0}
+
+#layout{display:flex;gap:20px;max-width:820px;margin:0 auto;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+
+/* inputs */
+#controls{flex:1 1 240px;max-width:300px}
+.cat-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+.field{margin-bottom:12px}
+.field label{font-size:10px;color:#E8A020;display:block;margin-bottom:4px;letter-spacing:2px;text-transform:uppercase}
+.field input,.field textarea{width:100%;background:rgba(255,255,255,0.04);border-radius:4px;padding:8px 11px;color:#F0E0C0;font-family:'EB Garamond',Georgia,serif;font-size:14px;outline:none;line-height:1.6}
+.field textarea{resize:vertical}
+#thumbs{margin-top:18px}
+.thumb-label{font-size:9px;color:#301408;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.thumb-row{display:flex;gap:8px}
+.thumb{cursor:pointer;transition:opacity 0.2s;text-align:center;opacity:0.4}
+.thumb.active{opacity:1}
+.thumb-box{width:52px;height:92px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.thumb-sym{font-size:15px}
+.thumb-word{font-size:7px;margin-top:2px}
+.thumb-name{font-size:8px;margin-top:3px;letter-spacing:1px}
+#reset-btn{margin-top:10px;width:100%;padding:8px;background:transparent;border:1px solid #3A1A08;color:#604020;border-radius:4px;cursor:pointer;font-size:11px;letter-spacing:1px;font-family:'Philosopher',serif}
+#hint{margin-top:14px;font-size:10px;color:#2A1006;line-height:1.8;padding-top:12px;border-top:1px solid #180804}
+
+/* preview */
+#preview-col{flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
+#preview-title{font-size:9px;color:#301408;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+#preview-wrap{position:relative;width:300px;height:533px;border-radius:8px;overflow:hidden}
+#bg-canvas{position:absolute;top:0;left:0;width:300px;height:533px;display:block}
+
+/* drag blocks — touch-action ONLY blocked on the grip */
+.drag-block{
+  position:absolute;left:0;right:0;
+  text-align:center;
+  pointer-events:none; /* block itself doesn't capture touch */
+}
+.drag-block .block-inner{
+  display:inline-block;
+  padding:4px 10px 6px;
+  border:1px dashed rgba(255,200,80,0.15);
+  border-radius:3px;
+  width:100%;
+  pointer-events:none;
+}
+.drag-grip{
+  display:block;
+  padding:5px 0 2px;
+  color:rgba(255,200,80,0.35);
+  font-size:11px;
+  letter-spacing:3px;
+  cursor:grab;
+  touch-action:none; /* ONLY the grip blocks touch */
+  pointer-events:all; /* grip captures events */
+  user-select:none;
+  -webkit-user-select:none;
+}
+.drag-grip:active{color:rgba(255,200,80,0.7);cursor:grabbing}
+
+/* block text styles (300px display scale) */
+.b-brand{font-family:'EB Garamond',serif;font-size:10px;color:#906040;letter-spacing:1px}
+.b-sym{font-size:12px;color:#E8A020;display:block;margin:2px 0}
+.b-hline{height:1px;background:linear-gradient(to right,transparent,rgba(232,160,32,0.5),transparent);margin:2px 24px}
+.b-badge{display:inline-block;border:1px solid rgba(196,87,42,0.65);padding:2px 12px;font-family:'EB Garamond',serif;font-size:10px;margin-top:3px;border-radius:1px}
+.b-title{font-family:'Philosopher',serif;font-size:19px;font-weight:700;line-height:1.3;margin-top:2px}
+.b-divline{height:1px;background:linear-gradient(to right,transparent,rgba(196,87,42,0.45),transparent);margin:3px 32px}
+.b-divsym{font-size:13px;color:#E8A020;display:block;margin:2px 0}
+.b-body{font-family:'EB Garamond',Georgia,serif;font-size:14px;line-height:1.65}
+.b-tagline{font-family:'EB Garamond',serif;font-size:9px;color:#806040;letter-spacing:1px}
+.b-hashtags{font-family:'EB Garamond',serif;font-size:8px;color:rgba(128,96,64,0.55);margin:3px 0}
+.b-footbrand{font-family:'Philosopher',serif;font-size:17px;font-weight:700;color:#E8A020}
+.b-footsub{font-family:'EB Garamond',serif;font-size:8px;color:#806040;letter-spacing:3px}
+
+/* save button */
+#save-btn{margin-top:10px;width:300px;padding:12px 0;text-align:center;border-radius:4px;border:none;cursor:pointer;font-family:'Philosopher',serif;font-size:14px;font-weight:700;letter-spacing:1px;color:#1A0800;transition:all 0.2s}
+#save-hint{font-size:9px;color:#503018;margin-top:5px;text-align:center;line-height:1.6}
+
+/* save modal */
+#save-modal{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.94);flex-direction:column;align-items:center;justify-content:center;padding:16px}
+#save-modal.open{display:flex}
+#modal-img{max-width:260px;max-height:72vh;border-radius:8px;display:block}
+#modal-msg{color:#E8A020;font-family:'EB Garamond',serif;font-size:14px;margin-top:14px;text-align:center;line-height:1.7}
+#modal-dl{margin-top:12px;padding:10px 28px;background:#E8A020;color:#1A0800;border:none;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:13px;font-weight:700;display:none}
+#modal-close{margin-top:10px;padding:8px 24px;background:transparent;border:1px solid #503018;color:#604020;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:12px}
+
+canvas#save-canvas{display:none}
+</style>
+</head>
+<body>
+
+<canvas id="save-canvas" width="1080" height="1920"></canvas>
+
+<div id="save-modal">
+  <img id="modal-img" src="" alt="Your post"/>
+  <div id="modal-msg"></div>
+  <button id="modal-dl" onclick="triggerDownload()">⬇ Download PNG</button>
+  <button id="modal-close" onclick="document.getElementById('save-modal').classList.remove('open')">✕ Close</button>
+</div>
+
+<div id="header">
+  <h1>विधि चक्र</h1>
+  <p>Post Template Studio</p>
+</div>
+
+<div id="tabs"></div>
+
+<div id="layout">
+  <div id="controls">
+    <div class="cat-label" id="cat-label"></div>
+    <div class="field">
+      <label>Title</label>
+      <input id="f-title" type="text" placeholder="Optional heading..."/>
+    </div>
+    <div class="field">
+      <label>Content</label>
+      <textarea id="f-body" rows="6" placeholder="Write your content here..."></textarea>
+    </div>
+    <div class="field">
+      <label>Hashtags</label>
+      <input id="f-tags" type="text"/>
+    </div>
+    <div id="thumbs">
+      <div class="thumb-label">All Templates</div>
+      <div class="thumb-row" id="thumb-row"></div>
+    </div>
+    <button id="reset-btn" onclick="resetPositions()">↺ Reset positions</button>
+    <div id="hint">
+      ✦ Drag the <span style="color:#E8A020">⠿</span> handle on each block to reposition<br/>
+      📱 iOS: tap Save → long-press image → Save to Photos<br/>
+      🤖 Android: tap Save → tap Download PNG
+    </div>
+  </div>
+
+  <div id="preview-col">
+    <div id="preview-title">⠿ Drag handles to reposition blocks</div>
+    <div id="preview-wrap">
+      <canvas id="bg-canvas" width="300" height="533"></canvas>
+    </div>
+    <button id="save-btn" onclick="saveImage()">⬇ Save Image</button>
+    <div id="save-hint">Tap Save → long-press image → Save to Photos</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// TEMPLATES
+// ═══════════════════════════════════════════════
+const T={
+  vastu:      {label:"Vastu",      cat:"वास्तु शास्त्र",  bgS:"#2D1008",bgE:"#0E0200",acc:"#C4572A",gold:"#E8A020",text:"#F5E0B0",sub:"#906040",sym:"◈",tag:"ज्ञान • दिशा • शांति",    htags:"#VastuShastra #VastuTips #GharKiDisha #VidhiChakra",   cg:"radial-gradient(ellipse at 30% 20%,#2D1008,#1C0800 60%,#0E0200)",mandala:"wheel"},
+  jyotish:    {label:"Jyotish",    cat:"ज्योतिष शास्त्र", bgS:"#0E0625",bgE:"#030310",acc:"#8B58D8",gold:"#FFD060",text:"#EAE0FF",sub:"#7060A0",sym:"✦",tag:"ग्रह • नक्षत्र • भाग्य", htags:"#Jyotish #RashiFal #Kundali #Astrology #VidhiChakra",   cg:"radial-gradient(ellipse at 70% 30%,#0E0625,#080818 60%,#030310)",mandala:"zodiac"},
+  rashifal:   {label:"Rashifal",   cat:"राशिफल",          bgS:"#08042A",bgE:"#020110",acc:"#6644CC",gold:"#C8A8FF",text:"#F0ECFF",sub:"#6858A8",sym:"☽",tag:"राशि • ग्रह • भविष्य",   htags:"#Rashifal #RashiPhal #Horoscope #Jyotish #VidhiChakra",cg:"radial-gradient(ellipse at 60% 25%,#08042A,#040218 60%,#020110)",mandala:"zodiac"},
+  numerology: {label:"Numerology", cat:"अंक ज्योतिष",    bgS:"#0F1800",bgE:"#030800",acc:"#5A9A20",gold:"#C8A020",text:"#E8F0D0",sub:"#608040",sym:"∞",tag:"अंक • भाग्य • जीवन",   htags:"#Numerology #AnkJyotish #LuckyNumber #VidhiChakra",    cg:"radial-gradient(ellipse at 40% 60%,#0F1800,#080F00 60%,#030800)",mandala:"wheel"},
+  mantra:     {label:"Mantra",     cat:"मन्त्र",           bgS:"#1A0600",bgE:"#060100",acc:"#CC5500",gold:"#FFB040",text:"#FFF0D8",sub:"#A06030",sym:"ॐ",tag:"मंत्र • शक्ति • जागृति",htags:"#Mantra #SanatanDharma #VedicMantra #VidhiChakra",      cg:"radial-gradient(ellipse at 40% 40%,#1A0600,#0E0300 60%,#060100)",mandala:"lotus"},
+  panchang:   {label:"Panchang",   cat:"पञ्चाङ्ग",         bgS:"#180C00",bgE:"#050200",acc:"#C08020",gold:"#FFD878",text:"#FFF8E8",sub:"#988050",sym:"✾",tag:"तिथि • नक्षत्र • योग",  htags:"#Panchang #Tithi #Nakshatra #VedicCalendar #VidhiChakra",cg:"radial-gradient(ellipse at 50% 20%,#180C00,#0E0600 60%,#050200)",mandala:"sun"},
+  yantra:     {label:"Yantra",     cat:"यन्त्र",            bgS:"#041418",bgE:"#010508",acc:"#207080",gold:"#50D0C0",text:"#D8F8F8",sub:"#407868",sym:"△",tag:"यन्त्र • साधना • मोक्ष",htags:"#Yantra #SriYantra #SacredGeometry #VidhiChakra",      cg:"radial-gradient(ellipse at 30% 70%,#041418,#020A10 60%,#010508)",mandala:"yantra"},
+  quote:      {label:"Quote",      cat:"आजको विचार",      bgS:"#231000",bgE:"#080200",acc:"#A05020",gold:"#D4881E",text:"#F0E0C0",sub:"#806040",sym:"❋",tag:"ज्ञान • चेतना • धर्म",  htags:"#SanatanDharma #Wisdom #DailyWisdom #VidhiChakra",     cg:"radial-gradient(ellipse at 50% 40%,#231000,#180800 60%,#080200)",mandala:"wheel"},
+};
+let active="vastu";
+const DEFAULT_POS={header:0.06,title:0.32,body:0.47,footer:0.76};
+let pos={...DEFAULT_POS};
+let lastDataURL="";
+
+// ═══════════════════════════════════════════════
+// CANVAS HELPERS
+// ═══════════════════════════════════════════════
+function hr(hex,a){
+  const h=hex.replace("#","");
+  return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
+}
+function gradLine(ctx,x1,x2,y,color){
+  const g=ctx.createLinearGradient(x1,y,x2,y);
+  g.addColorStop(0,hr(color,0));g.addColorStop(0.5,hr(color,0.75));g.addColorStop(1,hr(color,0));
+  ctx.beginPath();ctx.strokeStyle=g;ctx.lineWidth=2;ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();
+}
+function drawMandala(ctx,t,W,H){
+  const cx=W/2,cy=H/2,R=W*0.59;
+  const style=t.mandala||"wheel";
+  const gold=t.gold;
+  ctx.save();ctx.globalAlpha=0.12;ctx.strokeStyle=gold;
+
+  // Concentric rings — all styles share these
+  [1,0.85,0.66,0.47,0.30,0.17].forEach((f,i)=>{
+    ctx.beginPath();ctx.lineWidth=i===0?W*0.0023:W*0.0011;
+    ctx.arc(cx,cy,R*f,0,Math.PI*2);ctx.stroke();
+  });
+
+  if(style==="wheel"){
+    // 8-spoke wheel — Vastu, Numerology, Quote
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      ctx.beginPath();ctx.lineWidth=W*0.0009;
+      ctx.moveTo(cx+R*0.30*Math.sin(a),cy-R*0.30*Math.cos(a));
+      ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();
+    }
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      ctx.beginPath();ctx.lineWidth=W*0.0014;
+      ctx.arc(cx+R*0.66*Math.sin(a),cy-R*0.66*Math.cos(a),R*0.12,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.fillStyle=gold;
+    for(let i=0;i<16;i++){
+      const a=i*Math.PI/8;
+      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.sin(a),cy-(R+W*0.024)*Math.cos(a),W*0.01,0,Math.PI*2);ctx.fill();
+    }
+
+  } else if(style==="zodiac"){
+    // 12-spoke zodiac wheel — Jyotish, Rashifal
+    for(let i=0;i<12;i++){
+      const a=i*Math.PI/6;
+      ctx.beginPath();ctx.lineWidth=W*0.0009;
+      ctx.moveTo(cx+R*0.28*Math.sin(a),cy-R*0.28*Math.cos(a));
+      ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();
+    }
+    for(let i=0;i<12;i++){
+      const a=i*Math.PI/6;
+      ctx.beginPath();ctx.lineWidth=W*0.0012;
+      ctx.arc(cx+R*0.66*Math.sin(a),cy-R*0.66*Math.cos(a),R*0.09,0,Math.PI*2);ctx.stroke();
+    }
+    // Outer zodiac tick marks
+    ctx.fillStyle=gold;
+    for(let i=0;i<24;i++){
+      const a=i*Math.PI/12;
+      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.sin(a),cy-(R+W*0.024)*Math.cos(a),W*0.009,0,Math.PI*2);ctx.fill();
+    }
+
+  } else if(style==="lotus"){
+    // Lotus petals — Mantra
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      const px=cx+R*0.72*Math.sin(a),py=cy-R*0.72*Math.cos(a);
+      const cp1x=cx+R*0.88*Math.sin(a-0.32),cp1y=cy-R*0.88*Math.cos(a-0.32);
+      const cp2x=cx+R*0.88*Math.sin(a+0.32),cp2y=cy-R*0.88*Math.cos(a+0.32);
+      ctx.beginPath();ctx.lineWidth=W*0.0013;
+      ctx.moveTo(cx,cy);ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,px,py);
+      ctx.bezierCurveTo(cp2x,cp2y,cp1x,cp1y,cx,cy);ctx.stroke();
+    }
+    // Inner fine petals
+    for(let i=0;i<16;i++){
+      const a=i*Math.PI/8;
+      ctx.beginPath();ctx.lineWidth=W*0.0007;
+      ctx.moveTo(cx+R*0.12*Math.sin(a),cy-R*0.12*Math.cos(a));
+      ctx.lineTo(cx+R*0.38*Math.sin(a),cy-R*0.38*Math.cos(a));ctx.stroke();
+    }
+    ctx.fillStyle=gold;
+    for(let i=0;i<24;i++){
+      const a=i*Math.PI/12;
+      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.sin(a),cy-(R+W*0.024)*Math.cos(a),W*0.008,0,Math.PI*2);ctx.fill();
+    }
+
+  } else if(style==="sun"){
+    // Sun rays — Panchang
+    for(let i=0;i<16;i++){
+      const a=i*Math.PI/8;
+      ctx.beginPath();ctx.lineWidth=i%2===0?W*0.0015:W*0.0007;
+      ctx.moveTo(cx+R*0.18*Math.sin(a),cy-R*0.18*Math.cos(a));
+      ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();
+    }
+    for(let i=0;i<16;i++){
+      const a=i*Math.PI/8;
+      ctx.beginPath();ctx.lineWidth=W*0.0011;
+      ctx.arc(cx+R*0.52*Math.sin(a),cy-R*0.52*Math.cos(a),R*0.07,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.fillStyle=gold;
+    for(let i=0;i<32;i++){
+      const a=i*Math.PI/16;
+      ctx.beginPath();ctx.arc(cx+(R+W*0.022)*Math.sin(a),cy-(R+W*0.022)*Math.cos(a),W*0.007,0,Math.PI*2);ctx.fill();
+    }
+
+  } else if(style==="yantra"){
+    // Sri Yantra triangles — Yantra
+    [[0.92,true],[0.76,false],[0.62,true],[0.48,false],[0.35,true],[0.22,false]].forEach(([r,up])=>{
+      ctx.beginPath();ctx.lineWidth=W*0.001;
+      const base=up?-Math.PI/2:Math.PI/2;
+      for(let i=0;i<3;i++){
+        const a=base+i*Math.PI*2/3;
+        const x=cx+R*r*Math.cos(a),y=cy+R*r*Math.sin(a);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.closePath();ctx.stroke();
+    });
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      ctx.beginPath();ctx.lineWidth=W*0.0007;
+      ctx.moveTo(cx+R*0.22*Math.cos(a),cy+R*0.22*Math.sin(a));
+      ctx.lineTo(cx+R*0.92*Math.cos(a),cy+R*0.92*Math.sin(a));ctx.stroke();
+    }
+    ctx.fillStyle=gold;
+    for(let i=0;i<24;i++){
+      const a=i*Math.PI/12;
+      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.cos(a),cy+(R+W*0.024)*Math.sin(a),W*0.009,0,Math.PI*2);ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+function drawCorner(ctx,ox,oy,color,fx,fy,W){
+  const s=W/1080;
+  ctx.save();ctx.translate(ox,oy);ctx.scale(fx?-1:1,fy?-1:1);
+  ctx.globalAlpha=0.65;ctx.strokeStyle=color;ctx.lineCap="round";
+  ctx.lineWidth=3.5*s;
+  ctx.beginPath();ctx.moveTo(10*s,130*s);ctx.lineTo(10*s,10*s);ctx.lineTo(130*s,10*s);ctx.stroke();
+  ctx.lineWidth=1.8*s;
+  ctx.beginPath();ctx.moveTo(10*s,52*s);ctx.lineTo(52*s,10*s);ctx.stroke();
+  ctx.fillStyle=color;ctx.beginPath();ctx.arc(10*s,10*s,8*s,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+function drawBg(ctx,t,W,H){
+  const bg=ctx.createRadialGradient(W*0.35,H*0.22,0,W/2,H/2,W*0.95);
+  bg.addColorStop(0,t.bgS);bg.addColorStop(1,t.bgE);
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const vig=ctx.createRadialGradient(W/2,H/2,H*0.18,W/2,H/2,H*0.78);
+  vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,0.58)");
+  ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+  drawMandala(ctx,t,W,H);
+  drawCorner(ctx,0,0,t.gold,false,false,W);
+  drawCorner(ctx,W,0,t.gold,true,false,W);
+  drawCorner(ctx,0,H,t.gold,false,true,W);
+  drawCorner(ctx,W,H,t.gold,true,true,W);
+}
+function wrapText(ctx,text,cx,y,maxW,lh){
+  if(!text)return 0;
+  let lines=0;
+  text.split("\n").forEach(para=>{
+    if(!para.trim()){lines++;return;}
+    let line="";
+    para.split(/\s+/).forEach(word=>{
+      const test=line?line+" "+word:word;
+      if(ctx.measureText(test).width>maxW&&line){ctx.fillText(line,cx,y+lines*lh);lines++;line=word;}
+      else line=test;
+    });
+    if(line){ctx.fillText(line,cx,y+lines*lh);lines++;}
+  });
+  return lines;
+}
+
+// ═══════════════════════════════════════════════
+// RENDER BACKGROUND (preview canvas 300×533)
+// ═══════════════════════════════════════════════
+function renderBg(){
+  const cv=document.getElementById("bg-canvas");
+  drawBg(cv.getContext("2d"),T[active],300,533);
+}
+
+// ═══════════════════════════════════════════════
+// UPDATE BLOCK DISPLAY
+// ═══════════════════════════════════════════════
+function updateBlocks(){
+  const t=T[active];
+  const title=document.getElementById("f-title").value.trim();
+  const body=document.getElementById("f-body").value.trim();
+  const tags=document.getElementById("f-tags").value.trim();
+
+  // header
+  const h=document.getElementById("db-header");
+  h.style.top=(pos.header*533)+"px";
+  h.querySelector(".b-badge").textContent=t.cat;
+  h.querySelector(".b-badge").style.color=t.acc;
+  h.querySelector(".b-badge").style.borderColor=t.acc+"80";
+  h.querySelector(".b-sym").style.color=t.gold;
+
+  // title
+  const ti=document.getElementById("db-title");
+  if(title){
+    ti.style.display="block";
+    ti.style.top=(pos.title*533)+"px";
+    ti.querySelector(".b-title").textContent=title;
+    ti.querySelector(".b-title").style.color=t.text;
+  } else {
+    ti.style.display="none";
+  }
+
+  // body
+  const b=document.getElementById("db-body");
+  b.style.top=(pos.body*533)+"px";
+  b.querySelector(".b-body").textContent=body||"Your content will appear here...";
+  b.querySelector(".b-body").style.color=body?t.text:hr(t.sub,0.35);
+
+  // footer
+  const f=document.getElementById("db-footer");
+  f.style.top=(pos.footer*533)+"px";
+  f.querySelector(".b-tagline").textContent=t.tag;
+  f.querySelector(".b-hashtags").textContent=tags||t.htags;
+  f.querySelector(".b-footbrand").style.color=t.gold;
+  f.querySelector(".f-sym").style.color=t.gold;
+  f.querySelector(".f-sym").textContent=t.sym;
+}
+
+// ═══════════════════════════════════════════════
+// RENDER FULL SAVE CANVAS
+// ═══════════════════════════════════════════════
+function renderSaveCanvas(){
+  const t=T[active];
+  const cv=document.getElementById("save-canvas");
+  const ctx=cv.getContext("2d");
+  const W=1080,H=1920,SY=H/533;
+  const title=document.getElementById("f-title").value.trim();
+  const body=document.getElementById("f-body").value.trim();
+  const tags=document.getElementById("f-tags").value.trim();
+
+  // Read actual pixel positions from DOM elements, then scale to canvas
+  // This guarantees saved image matches what you see in the preview exactly
+  const getY=id=>(parseFloat(document.getElementById(id).style.top)||0)*SY;
+
+  ctx.clearRect(0,0,W,H);
+  drawBg(ctx,t,W,H);
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";
+
+  // HEADER
+  let y=getY("db-header")+36;
+  ctx.font="400 36px 'EB Garamond',serif";ctx.fillStyle=hr(t.sub,0.85);
+  ctx.fillText("॥  विधि चक्र  ॥",W/2,y);y+=26;
+  gradLine(ctx,240,W/2-46,y,t.gold);gradLine(ctx,W/2+46,W-240,y,t.gold);y+=6;
+  ctx.fillStyle=t.gold;ctx.font="36px serif";ctx.fillText(t.sym,W/2,y+30);y+=56;
+  ctx.font="400 36px 'EB Garamond',serif";
+  const cw=ctx.measureText(t.cat).width+80;
+  ctx.strokeStyle=hr(t.acc,0.85);ctx.lineWidth=1.8;
+  ctx.strokeRect(W/2-cw/2,y,cw,58);
+  ctx.fillStyle=hr(t.acc,0.92);ctx.fillText(t.cat,W/2,y+42);
+
+  // TITLE
+  if(title){
+    y=getY("db-title")+68;
+    ctx.font="700 68px 'Philosopher',serif";ctx.fillStyle=t.text;
+    wrapText(ctx,title,W/2,y,W-220,90);
+  }
+
+  // BODY
+  if(body){
+    y=getY("db-body")+14;
+    ctx.font="400 50px 'EB Garamond',Georgia,serif";ctx.fillStyle=t.text;
+    wrapText(ctx,body,W/2,y,W-240,76);
+  }
+
+  // FOOTER
+  y=getY("db-footer")+28;
+  ctx.font="400 32px 'EB Garamond',serif";ctx.fillStyle=hr(t.sub,0.68);
+  ctx.fillText(t.tag,W/2,y);y+=40;
+  gradLine(ctx,240,W/2-46,y,t.gold);gradLine(ctx,W/2+46,W-240,y,t.gold);y+=8;
+  ctx.fillStyle=t.gold;ctx.font="38px serif";ctx.fillText(t.sym,W/2,y+30);y+=70;
+  // measure hashtag lines first so brand never overlaps
+  ctx.font="400 26px 'EB Garamond',serif";ctx.fillStyle=hr(t.sub,0.48);
+  const hLines=wrapText(ctx,tags||t.htags,W/2,y,W-200,38);
+  y+=hLines*38+40;
+  ctx.fillStyle=t.gold;ctx.font="700 62px 'Philosopher',serif";
+  ctx.fillText("विधि चक्र",W/2,y);y+=58;
+  ctx.fillStyle=hr(t.sub,0.68);ctx.font="400 28px 'EB Garamond',serif";
+  ctx.fillText("V I D H I   C H A K R A",W/2,y);
+
+  return cv.toDataURL("image/png");
+}
+
+// ═══════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════
+function saveImage(){
+  const btn=document.getElementById("save-btn");
+  btn.textContent="⏳ Building...";
+  btn.disabled=true;
+
+  // short delay so fonts are applied
+  setTimeout(()=>{
+    lastDataURL=renderSaveCanvas();
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+    const modalImg=document.getElementById("modal-img");
+    const modalMsg=document.getElementById("modal-msg");
+    const modalDl=document.getElementById("modal-dl");
+
+    modalImg.src=lastDataURL;
+
+    if(isIOS){
+      modalMsg.innerHTML="Long-press the image above<br/>then tap <strong style='color:#E8A020'>Save to Photos</strong>";
+      modalDl.style.display="none";
+    } else {
+      modalMsg.innerHTML="Tap the button below to download<br/>or long-press the image to save";
+      modalDl.style.display="inline-block";
+    }
+
+    document.getElementById("save-modal").classList.add("open");
+    btn.textContent="⬇ Save Image";
+    btn.disabled=false;
+  },200);
+}
+
+function triggerDownload(){
+  if(!lastDataURL)return;
+  const a=document.createElement("a");
+  a.href=lastDataURL;
+  a.download=`vidhichakra-${active}.png`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ═══════════════════════════════════════════════
+// DRAG — only grip handle triggers drag
+// ═══════════════════════════════════════════════
+function initDrag(gripEl,blockId){
+  const H=533;
+  let startClientY=0,startPos=0,dragging=false;
+
+  const start=clientY=>{
+    dragging=true;
+    startClientY=clientY;
+    startPos=pos[blockId];
+    gripEl.style.color="rgba(255,200,80,0.8)";
+  };
+  const move=clientY=>{
+    if(!dragging)return;
+    const dy=(clientY-startClientY)/H;
+    pos[blockId]=Math.max(0,Math.min(0.92,startPos+dy));
+    document.getElementById("db-"+blockId).style.top=(pos[blockId]*H)+"px";
+  };
+  const end=()=>{
+    dragging=false;
+    gripEl.style.color="rgba(255,200,80,0.35)";
+  };
+
+  gripEl.addEventListener("mousedown",e=>{start(e.clientY);e.preventDefault();},{passive:false});
+  window.addEventListener("mousemove",e=>{if(dragging)move(e.clientY);});
+  window.addEventListener("mouseup",()=>{if(dragging)end();});
+
+  gripEl.addEventListener("touchstart",e=>{start(e.touches[0].clientY);e.preventDefault();},{passive:false});
+  window.addEventListener("touchmove",e=>{if(dragging){move(e.touches[0].clientY);e.preventDefault();}},{passive:false});
+  window.addEventListener("touchend",()=>{if(dragging)end();});
+}
+
+function resetPositions(){
+  Object.assign(pos,DEFAULT_POS);
+  updateBlocks();
+}
+
+// ═══════════════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════════════
+function buildDragBlocks(){
+  const wrap=document.getElementById("preview-wrap");
+  const defs=[
+    {id:"db-header",posKey:"header",inner:`
+      <div class="b-brand">॥  विधि चक्र  ॥</div>
+      <div class="b-hline"></div>
+      <span class="b-sym">◈</span>
+      <div class="b-hline"></div>
+      <span class="b-badge"></span>`},
+    {id:"db-title",posKey:"title",inner:`
+      <div class="b-title"></div>`},
+    {id:"db-body",posKey:"body",inner:`
+      <div class="b-body"></div>`},
+    {id:"db-footer",posKey:"footer",inner:`
+      <div class="b-tagline"></div>
+      <div class="b-hline"></div>
+      <span class="f-sym b-sym"></span>
+      <div class="b-hline"></div>
+      <div class="b-hashtags"></div>
+      <div class="b-footbrand">विधि चक्र</div>
+      <div class="b-footsub">VIDHI CHAKRA</div>`},
+  ];
+  defs.forEach(d=>{
+    const div=document.createElement("div");
+    div.id=d.id;div.className="drag-block";
+    div.innerHTML=`<span class="drag-grip">⠿ drag</span><div class="block-inner">${d.inner}</div>`;
+    wrap.appendChild(div);
+    initDrag(div.querySelector(".drag-grip"),d.posKey);
+  });
+}
+
+function buildTabs(){
+  const bar=document.getElementById("tabs");
+  Object.entries(T).forEach(([key,tmpl])=>{
+    const btn=document.createElement("button");
+    btn.className="tab-btn";btn.id="tab-"+key;btn.textContent=tmpl.label;
+    btn.style.color=tmpl.gold;btn.style.border=`1px solid ${tmpl.gold}70`;
+    btn.onclick=()=>switchTemplate(key);
+    bar.appendChild(btn);
+  });
+}
+
+function buildThumbs(){
+  const row=document.getElementById("thumb-row");
+  Object.entries(T).forEach(([key,tmpl])=>{
+    const d=document.createElement("div");
+    d.className="thumb"+(key===active?" active":"");d.id="thumb-"+key;
+    d.innerHTML=`<div class="thumb-box" style="background:${tmpl.cg};border:1px solid ${tmpl.gold}25">
+      <div><div class="thumb-sym" style="color:${tmpl.gold}">${tmpl.sym}</div>
+      <div class="thumb-word" style="color:${tmpl.sub}">विधि</div></div></div>
+      <div class="thumb-name" style="color:${tmpl.gold}">${tmpl.label.toUpperCase()}</div>`;
+    d.onclick=()=>switchTemplate(key);
+    row.appendChild(d);
+  });
+}
+
+function syncStyles(){
+  const t=T[active];
+  Object.entries(T).forEach(([key,tmpl])=>{
+    const btn=document.getElementById("tab-"+key);
+    btn.style.background=key===active?tmpl.gold:"transparent";
+    btn.style.color=key===active?"#1A0800":tmpl.gold;
+    document.getElementById("thumb-"+key).className="thumb"+(key===active?" active":"");
+  });
+  document.getElementById("cat-label").textContent=t.cat;
+  document.getElementById("cat-label").style.color=t.sub;
+  ["f-title","f-body","f-tags"].forEach(id=>{
+    document.getElementById(id).style.border=`1px solid ${t.acc}35`;
+  });
+  document.getElementById("f-tags").style.color=t.sub;
+  document.getElementById("f-tags").placeholder=t.htags;
+  document.getElementById("save-btn").style.background=t.gold;
+}
+
+function switchTemplate(key){
+  active=key;
+  document.getElementById("f-title").value="";
+  document.getElementById("f-body").value="";
+  document.getElementById("f-tags").value="";
+  syncStyles();renderBg();updateBlocks();
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  buildTabs();buildThumbs();buildDragBlocks();
+  syncStyles();renderBg();updateBlocks();
+  ["f-title","f-body","f-tags"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",updateBlocks);
+  });
+});
+</script>
+</body>
+</html>

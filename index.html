@@ -1,644 +1,1964 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="ne">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Vidhi Chakra"/>
-<meta name="theme-color" content="#060300"/>
-<title>विधि चक्र — Template Studio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<meta name="apple-mobile-web-app-title" content="Jyotish Tools"/>
+<meta name="theme-color" content="#04020A"/>
+<title>ज्योतिष — Pandit Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Philosopher:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
+:root{
+  --bg:#04020A; --bg2:#08041A; --bg3:#0C0620;
+  --gold:#E8C040; --gold2:#C89A20; --amber:#F08020;
+  --text:#F4EED8; --muted:#7A6840; --dim:#3A2E18;
+  --red:#CC2020; --green:#207840; --blue:#2060B0;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#060300;color:#F0E0C0;font-family:'Philosopher',Georgia,serif;min-height:100vh}
-body{padding:18px 14px 60px}
+html,body{background:var(--bg);color:var(--text);font-family:'Philosopher',Georgia,serif;min-height:100vh}
+body{padding:0 0 60px}
 
-#header{text-align:center;margin-bottom:20px}
-#header h1{font-size:22px;color:#E8A020;letter-spacing:4px}
-#header p{font-size:9px;color:#422010;letter-spacing:5px;text-transform:uppercase;margin-top:3px}
+/* ── header ── */
+#hdr{text-align:center;padding:18px 16px 14px;border-bottom:1px solid var(--dim)}
+#hdr h1{font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:var(--gold);letter-spacing:3px}
+#hdr p{font-size:9px;color:var(--muted);letter-spacing:5px;text-transform:uppercase;margin-top:3px}
+#accuracy-note{font-size:9px;color:#604828;margin-top:5px;font-style:italic}
 
-#tabs{display:flex;gap:6px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;margin-bottom:20px;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+/* ── tabs ── */
+#tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--dim);scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
-.tab-btn{padding:6px 13px;font-family:'Philosopher',serif;font-size:12px;font-weight:700;cursor:pointer;border-radius:3px;transition:all 0.2s;background:transparent;white-space:nowrap;flex-shrink:0}
+.tab{padding:10px 16px;font-family:'Philosopher',serif;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;color:var(--muted);transition:all 0.2s;flex-shrink:0;background:transparent;border-top:none;border-left:none;border-right:none}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
 
-#layout{display:flex;gap:20px;max-width:820px;margin:0 auto;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+/* ── panels ── */
+.panel{display:none;padding:16px}
+.panel.active{display:block}
+.section-title{font-size:10px;color:var(--gold2);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--dim)}
 
-/* inputs */
-#controls{flex:1 1 240px;max-width:300px}
-.cat-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
-.field{margin-bottom:12px}
-.field label{font-size:10px;color:#E8A020;display:block;margin-bottom:4px;letter-spacing:2px;text-transform:uppercase}
-.field input,.field textarea{width:100%;background:rgba(255,255,255,0.04);border-radius:4px;padding:8px 11px;color:#F0E0C0;font-family:'EB Garamond',Georgia,serif;font-size:14px;outline:none;line-height:1.6}
-.field textarea{resize:vertical}
-#thumbs{margin-top:18px}
-.thumb-label{font-size:9px;color:#301408;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
-.thumb-row{display:flex;gap:8px}
-.thumb{cursor:pointer;transition:opacity 0.2s;text-align:center;opacity:0.4}
-.thumb.active{opacity:1}
-.thumb-box{width:52px;height:92px;border-radius:4px;display:flex;align-items:center;justify-content:center}
-.thumb-sym{font-size:15px}
-.thumb-word{font-size:7px;margin-top:2px}
-.thumb-name{font-size:8px;margin-top:3px;letter-spacing:1px}
-#reset-btn{margin-top:10px;width:100%;padding:8px;background:transparent;border:1px solid #3A1A08;color:#604020;border-radius:4px;cursor:pointer;font-size:11px;letter-spacing:1px;font-family:'Philosopher',serif}
-#hint{margin-top:14px;font-size:10px;color:#2A1006;line-height:1.8;padding-top:12px;border-top:1px solid #180804}
+/* ── form elements ── */
+.form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.form-group{flex:1 1 120px}
+.form-group label{font-size:9px;color:var(--gold2);display:block;margin-bottom:4px;letter-spacing:2px;text-transform:uppercase}
+.form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--dim);border-radius:3px;padding:7px 10px;color:var(--text);font-family:'EB Garamond',serif;font-size:13px;outline:none}
+.form-group select option{background:var(--bg2)}
+.btn{padding:9px 20px;border:none;border-radius:3px;cursor:pointer;font-family:'Philosopher',serif;font-size:13px;font-weight:700;letter-spacing:1px;transition:all 0.2s}
+.btn-gold{background:var(--gold);color:#1A0E00}
+.btn-outline{background:transparent;border:1px solid var(--gold2);color:var(--gold2)}
 
-/* preview */
-#preview-col{flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
-#preview-title{font-size:9px;color:#301408;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
-#preview-wrap{position:relative;width:300px;height:533px;border-radius:8px;overflow:hidden}
-#bg-canvas{position:absolute;top:0;left:0;width:300px;height:533px;display:block}
+/* ── panchang display ── */
+#panch-result{margin-top:16px}
+.panch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.panch-card{background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px 12px}
+.panch-card .label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.panch-card .value{font-family:'Tiro Devanagari Sanskrit',serif;font-size:15px;color:var(--gold)}
+.panch-card .value-en{font-family:'EB Garamond',serif;font-size:11px;color:var(--muted);font-style:italic;margin-top:1px}
+.panch-card .num{font-size:11px;color:var(--muted)}
+.rahu-kaal{background:rgba(150,20,20,0.15);border-color:#601818}
 
-/* drag blocks — touch-action ONLY blocked on the grip */
-.drag-block{
-  position:absolute;left:0;right:0;
-  text-align:center;
-  pointer-events:none; /* block itself doesn't capture touch */
-}
-.drag-block .block-inner{
-  display:inline-block;
-  padding:4px 10px 6px;
-  border:1px dashed rgba(255,200,80,0.15);
-  border-radius:3px;
-  width:100%;
-  pointer-events:none;
-}
-.drag-grip{
-  display:block;
-  padding:5px 0 2px;
-  color:rgba(255,200,80,0.35);
-  font-size:11px;
-  letter-spacing:3px;
-  cursor:grab;
-  touch-action:none; /* ONLY the grip blocks touch */
-  pointer-events:all; /* grip captures events */
-  user-select:none;
-  -webkit-user-select:none;
-}
-.drag-grip:active{color:rgba(255,200,80,0.7);cursor:grabbing}
+/* ── kundali chart ── */
+#kundali-result{margin-top:16px}
+.chart-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+#kundali-canvas{border:1px solid var(--dim);border-radius:4px}
+.planet-list{width:100%;background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px}
+.planet-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--dim)}
+.planet-row:last-child{border-bottom:none}
+.planet-name{font-family:'Tiro Devanagari Sanskrit',serif;font-size:13px;color:var(--gold)}
+.planet-detail{font-family:'EB Garamond',serif;font-size:12px;color:var(--muted);font-style:italic}
+.planet-lon{font-size:12px;color:var(--text)}
 
-/* block text styles (300px display scale) */
-.b-brand{font-family:'EB Garamond',serif;font-size:10px;color:#906040;letter-spacing:1px}
-.b-sym{font-size:12px;color:#E8A020;display:block;margin:2px 0}
-.b-hline{height:1px;background:linear-gradient(to right,transparent,rgba(232,160,32,0.5),transparent);margin:2px 24px}
-.b-badge{display:inline-block;border:1px solid rgba(196,87,42,0.65);padding:2px 12px;font-family:'EB Garamond',serif;font-size:10px;margin-top:3px;border-radius:1px}
-.b-title{font-family:'Philosopher',serif;font-size:19px;font-weight:700;line-height:1.3;margin-top:2px}
-.b-divline{height:1px;background:linear-gradient(to right,transparent,rgba(196,87,42,0.45),transparent);margin:3px 32px}
-.b-divsym{font-size:13px;color:#E8A020;display:block;margin:2px 0}
-.b-body{font-family:'EB Garamond',Georgia,serif;font-size:14px;line-height:1.65}
-.b-tagline{font-family:'EB Garamond',serif;font-size:9px;color:#806040;letter-spacing:1px}
-.b-hashtags{font-family:'EB Garamond',serif;font-size:8px;color:rgba(128,96,64,0.55);margin:3px 0}
-.b-footbrand{font-family:'Philosopher',serif;font-size:17px;font-weight:700;color:#E8A020}
-.b-footsub{font-family:'EB Garamond',serif;font-size:8px;color:#806040;letter-spacing:3px}
+/* ── dasha ── */
+.dasha-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:3px;margin-bottom:5px;background:var(--bg2);border:1px solid var(--dim)}
+.dasha-row.active-maha{border-color:var(--gold);background:rgba(200,160,40,0.08)}
+.dasha-row.active-antar{border-color:var(--amber)}
+.dasha-planet{font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--gold);width:80px}
+.dasha-period{font-family:'EB Garamond',serif;font-size:11px;color:var(--muted);font-style:italic;flex:1}
+.dasha-dates{font-size:11px;color:var(--text)}
+.dasha-badge{font-size:9px;padding:2px 6px;border-radius:2px;background:var(--gold);color:#1A0E00;font-weight:700;letter-spacing:1px}
 
-/* save button */
-#save-btn{margin-top:10px;width:300px;padding:12px 0;text-align:center;border-radius:4px;border:none;cursor:pointer;font-family:'Philosopher',serif;font-size:14px;font-weight:700;letter-spacing:1px;color:#1A0800;transition:all 0.2s}
-#save-hint{font-size:9px;color:#503018;margin-top:5px;text-align:center;line-height:1.6}
+/* ── BS converter ── */
+.convert-result{margin-top:14px;background:var(--bg2);border:1px solid var(--gold2);border-radius:4px;padding:14px;text-align:center}
+.convert-result .big{font-family:'Tiro Devanagari Sanskrit',serif;font-size:20px;color:var(--gold);margin-bottom:6px}
+.convert-result .small{font-family:'EB Garamond',serif;font-size:12px;color:var(--muted);font-style:italic}
 
-/* save modal */
-#save-modal{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.94);flex-direction:column;align-items:center;justify-content:center;padding:16px}
-#save-modal.open{display:flex}
-#modal-img{max-width:260px;max-height:72vh;border-radius:8px;display:block}
-#modal-msg{color:#E8A020;font-family:'EB Garamond',serif;font-size:14px;margin-top:14px;text-align:center;line-height:1.7}
-#modal-dl{margin-top:12px;padding:10px 28px;background:#E8A020;color:#1A0800;border:none;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:13px;font-weight:700;display:none}
-#modal-close{margin-top:10px;padding:8px 24px;background:transparent;border:1px solid #503018;color:#604020;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:12px}
+/* ── reference ── */
+.ref-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px}
+.ref-table th{background:var(--bg2);color:var(--gold2);padding:7px 8px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--dim)}
+.ref-table td{padding:6px 8px;border-bottom:1px solid var(--dim);font-family:'EB Garamond',serif;vertical-align:top}
+.ref-table tr:hover td{background:rgba(255,255,255,0.02)}
+.dev{font-family:'Tiro Devanagari Sanskrit',serif;font-size:13px;color:var(--gold)}
 
-canvas#save-canvas{display:none}
+.note-box{background:rgba(100,80,20,0.15);border:1px solid var(--dim);border-radius:4px;padding:10px 12px;font-size:10px;color:#806040;line-height:1.7;margin-bottom:14px}
 </style>
 </head>
 <body>
 
-<canvas id="save-canvas" width="1080" height="1920"></canvas>
-
-<div id="save-modal">
-  <img id="modal-img" src="" alt="Your post"/>
-  <div id="modal-msg"></div>
-  <button id="modal-dl" onclick="triggerDownload()">⬇ Download PNG</button>
-  <button id="modal-close" onclick="document.getElementById('save-modal').classList.remove('open')">✕ Close</button>
+<div id="hdr">
+  <h1>ज्योतिष केन्द्र</h1>
+  <p>Vedic Jyotish Practitioner Dashboard</p>
+  <div id="accuracy-note">Calculations: Jean Meeus Astronomical Algorithms · Lahiri (Chitrapaksha) Ayanamsa · Parashari System</div>
 </div>
 
-<div id="header">
-  <h1>विधि चक्र</h1>
-  <p>Post Template Studio</p>
+<div id="tabs">
+  <button class="tab active" onclick="showTab('panchang',this)">🌙 Panchang</button>
+  <button class="tab" onclick="showTab('kundali',this)">⊕ Kundali</button>
+  <button class="tab" onclick="showTab('dasha',this)">⏳ Dasha</button>
+  <button class="tab" onclick="showTab('convert',this)">📅 BS ↔ AD</button>
+  <button class="tab" onclick="showTab('templates',this)">🎨 Templates</button>
+  <button class="tab" onclick="showTab('study',this)">📚 Study</button>
+  <button class="tab" onclick="showTab('reference',this)">📖 Reference</button>
 </div>
 
-<div id="tabs"></div>
+<!-- ══════════════════ PANCHANG ══════════════════ -->
+<div id="panel-panchang" class="panel active">
+  <div class="section-title">आजको पञ्चाङ्ग — Daily Panchang</div>
+  <div class="note-box">
+    Sun & Moon positions: Jean Meeus Ch.25 & Ch.47 full series (~1′ accuracy).
+    Tithi, Nakshatra, Yoga, Karana from Lahiri sidereal longitudes.
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Date</label><input type="date" id="p-date"/></div>
+    <div class="form-group"><label>Time</label><input type="time" id="p-time" value="06:00"/></div>
+  </div>
+  <div class="form-row" style="align-items:flex-end">
+    <div class="form-group" style="flex:2 1 200px">
+      <label>Location / Place</label>
+      <input type="text" id="p-place" placeholder="e.g. Kathmandu, Pokhara, Mumbai..." value="Kathmandu" oninput="clearLocationP()"/>
+    </div>
+    <div class="form-group" style="flex:0 0 auto">
+      <button class="btn btn-outline" onclick="lookupLocationP()" id="p-lookup-btn" style="width:100%;margin-top:0">🔍 Lookup</button>
+    </div>
+  </div>
+  <div id="p-location-status" style="font-size:10px;color:var(--muted);margin:-6px 0 8px;font-family:'EB Garamond',serif;font-style:italic;min-height:14px"></div>
+  <input type="hidden" id="p-lat" value="27.7172"/>
+  <input type="hidden" id="p-lon" value="85.3240"/>
+  <input type="hidden" id="p-tz"  value="5.75"/>
+  <button class="btn btn-gold" onclick="calcPanchang()">Calculate Panchang</button>
+  <div id="panch-result"></div>
+</div>
 
-<div id="layout">
-  <div id="controls">
-    <div class="cat-label" id="cat-label"></div>
-    <div class="field">
-      <label>Title</label>
-      <input id="f-title" type="text" placeholder="Optional heading..."/>
+<!-- ══════════════════ KUNDALI ══════════════════ -->
+<div id="panel-kundali" class="panel">
+  <div class="section-title">जन्म कुण्डली — Birth Chart (North Indian)</div>
+  <div class="note-box">
+    Planetary positions: Jean Meeus geocentric method (~1–2°). Lagna from LMST + obliquity (Meeus Ch.14). Location looked up via OpenStreetMap · Timezone from longitude.
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Full Name</label><input type="text" id="k-name" placeholder="Name"/></div>
+    <div class="form-group"><label>Birth Date</label><input type="date" id="k-date"/></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Birth Time</label><input type="time" id="k-time" value="12:00"/></div>
+  </div>
+
+  <!-- Place search -->
+  <div class="form-row" style="align-items:flex-end">
+    <div class="form-group" style="flex:2 1 200px">
+      <label>Birth Place</label>
+      <input type="text" id="k-place" placeholder="e.g. Kathmandu, Butwal, Lucknow..." oninput="clearLocationK()"/>
     </div>
-    <div class="field">
-      <label>Content</label>
-      <textarea id="f-body" rows="6" placeholder="Write your content here..."></textarea>
+    <div class="form-group" style="flex:0 0 auto">
+      <button class="btn btn-outline" onclick="lookupLocationK()" id="k-lookup-btn" style="width:100%">🔍 Lookup</button>
     </div>
-    <div class="field">
-      <label>Hashtags</label>
-      <input id="f-tags" type="text"/>
+  </div>
+  <div id="k-location-status" style="font-size:10px;color:var(--muted);margin:-6px 0 8px;font-family:'EB Garamond',serif;font-style:italic;min-height:14px"></div>
+
+  <!-- Resolved location details (read-only, visible after lookup) -->
+  <div id="k-location-details" style="display:none;background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:8px 12px;margin-bottom:12px;font-size:11px;font-family:'EB Garamond',serif">
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div><span style="color:var(--muted)">Lat: </span><span id="k-lat-show" style="color:var(--text)"></span></div>
+      <div><span style="color:var(--muted)">Lon: </span><span id="k-lon-show" style="color:var(--text)"></span></div>
+      <div><span style="color:var(--muted)">Timezone: </span><span id="k-tz-show" style="color:var(--amber)"></span></div>
     </div>
-    <div id="thumbs">
-      <div class="thumb-label">All Templates</div>
-      <div class="thumb-row" id="thumb-row"></div>
+    <div style="margin-top:4px;color:var(--muted);font-size:10px">
+      Timezone auto-estimated from longitude.
+      <span onclick="document.getElementById('k-tz-manual').style.display='flex'" style="color:var(--gold2);cursor:pointer;text-decoration:underline">Adjust manually?</span>
     </div>
-    <button id="reset-btn" onclick="resetPositions()">↺ Reset positions</button>
-    <div id="hint">
-      ✦ Drag the <span style="color:#E8A020">⠿</span> handle on each block to reposition<br/>
-      📱 iOS: tap Save → long-press image → Save to Photos<br/>
-      🤖 Android: tap Save → tap Download PNG
+    <div id="k-tz-manual" style="display:none;margin-top:6px;align-items:center;gap:8px">
+      <span style="color:var(--muted);font-size:10px">UTC offset (hrs):</span>
+      <input type="number" id="k-tz-override" step="0.25" style="width:80px;background:var(--bg);border:1px solid var(--dim);border-radius:3px;padding:4px 8px;color:var(--text);font-size:12px;outline:none"/>
+      <button onclick="applyTzOverride()" class="btn btn-outline" style="padding:4px 10px;font-size:11px">Apply</button>
     </div>
   </div>
 
-  <div id="preview-col">
-    <div id="preview-title">⠿ Drag handles to reposition blocks</div>
-    <div id="preview-wrap">
-      <canvas id="bg-canvas" width="300" height="533"></canvas>
+  <!-- Hidden fields used by calcKundali -->
+  <input type="hidden" id="k-lat" value="27.7172"/>
+  <input type="hidden" id="k-lon" value="85.3240"/>
+  <input type="hidden" id="k-tz"  value="5.75"/>
+
+  <button class="btn btn-gold" onclick="calcKundali()">Generate Kundali</button>
+  <div id="kundali-result"></div>
+</div>
+
+<!-- ══════════════════ DASHA ══════════════════ -->
+<div id="panel-dasha" class="panel">
+  <div class="section-title">विंशोत्तरी दशा — Vimshottari Dasha</div>
+  <div class="note-box">
+    120-year Vimshottari cycle from Parashari system. Starting dasha lord = Nakshatra lord of Moon at birth. Balance calculated from Moon's position within Nakshatra.
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Birth Date</label><input type="date" id="d-date"/></div>
+    <div class="form-group"><label>Birth Time</label><input type="time" id="d-time" value="12:00"/></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Timezone (hrs)</label><input type="number" id="d-tz" value="5.75" step="0.25"/></div>
+    <div class="form-group"><label>Show years ahead</label><input type="number" id="d-years" value="30" min="5" max="120"/></div>
+  </div>
+  <button class="btn btn-gold" onclick="calcDasha()">Calculate Dasha</button>
+  <div id="dasha-result" style="margin-top:16px"></div>
+</div>
+
+<!-- ══════════════════ CONVERTER ══════════════════ -->
+<div id="panel-convert" class="panel">
+  <div class="section-title">विक्रम सम्वत् ↔ ईस्वी सन् — BS / AD Converter</div>
+  <div class="note-box">
+    Conversion uses reference table for Baisakh 1 dates (2070–2090 BS) with algorithmic extension. Month day accuracy: ±1 day outside lookup range. BS months use average lengths.
+  </div>
+  <div class="section-title">AD → BS</div>
+  <div class="form-row">
+    <div class="form-group"><label>AD Date</label><input type="date" id="c-ad"/></div>
+  </div>
+  <button class="btn btn-gold" onclick="convertAdToBs()">Convert to BS</button>
+  <div id="c-ad-result"></div>
+  <br/>
+  <div class="section-title">BS → AD</div>
+  <div class="form-row">
+    <div class="form-group"><label>BS Year</label><input type="number" id="c-bs-y" placeholder="e.g. 2081" value="2081"/></div>
+    <div class="form-group">
+      <label>BS Month</label>
+      <select id="c-bs-m">
+        <option value="1">१ बैशाख (Baisakh)</option><option value="2">२ जेठ (Jestha)</option>
+        <option value="3">३ असार (Ashadh)</option><option value="4">४ श्रावण (Shrawan)</option>
+        <option value="5">५ भाद्र (Bhadra)</option><option value="6">६ आश्विन (Ashwin)</option>
+        <option value="7">७ कार्तिक (Kartik)</option><option value="8">८ मंसिर (Mangsir)</option>
+        <option value="9">९ पौष (Poush)</option><option value="10">१० माघ (Magh)</option>
+        <option value="11">११ फाल्गुन (Falgun)</option><option value="12">१२ चैत्र (Chaitra)</option>
+      </select>
     </div>
-    <button id="save-btn" onclick="saveImage()">⬇ Save Image</button>
-    <div id="save-hint">Tap Save → long-press image → Save to Photos</div>
+    <div class="form-group"><label>BS Day</label><input type="number" id="c-bs-d" value="1" min="1" max="32"/></div>
+  </div>
+  <button class="btn btn-gold" onclick="convertBsToAd()">Convert to AD</button>
+  <div id="c-bs-result"></div>
+</div>
+
+<!-- ══════════════════ REFERENCE ══════════════════ -->
+<div id="panel-reference" class="panel">
+  <div class="section-title">२७ नक्षत्र — 27 Nakshatras</div>
+  <table class="ref-table">
+    <thead><tr><th>#</th><th>नक्षत्र</th><th>Name</th><th>Lord</th><th>Span</th><th>Symbol</th></tr></thead>
+    <tbody id="nakshatra-table"></tbody>
+  </table>
+  <div class="section-title">१२ राशि — 12 Rashis</div>
+  <table class="ref-table">
+    <thead><tr><th>#</th><th>राशि</th><th>Rashi</th><th>Lord</th><th>Element</th><th>Quality</th></tr></thead>
+    <tbody id="rashi-table"></tbody>
+  </table>
+  <div class="section-title">ग्रह — Grahas & Dasha Periods</div>
+  <table class="ref-table">
+    <thead><tr><th>ग्रह</th><th>Graha</th><th>Abbr</th><th>Dasha Yrs</th><th>Owns Rashi</th><th>Exalted</th></tr></thead>
+    <tbody id="graha-table"></tbody>
+  </table>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// ASTRONOMICAL ENGINE
+// Source: Jean Meeus, "Astronomical Algorithms" 2nd ed.
+// Ayanamsa: Lahiri/Chitrapaksha (IAU standard for Vedic)
+// ════════════════════════════════════════════════════════
+
+// ── Julian Day Number (Meeus Ch.7) ──
+function toJD(year, month, day, hour=0, min=0, sec=0){
+  const h=hour+min/60+sec/3600;
+  let y=year, m=month;
+  if(m<=2){y--;m+=12;}
+  const A=Math.floor(y/100);
+  const B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+day+h/24+B-1524.5;
+}
+
+function fromJD(jd){
+  let z=Math.floor(jd+0.5), f=(jd+0.5)-z;
+  let a=z;
+  if(z>=2299161){const al=Math.floor((z-1867216.25)/36524.25);a=z+1+al-Math.floor(al/4);}
+  const b=a+1524, c=Math.floor((b-122.1)/365.25);
+  const d=Math.floor(365.25*c), e=Math.floor((b-d)/30.6001);
+  const day=b-d-Math.floor(30.6001*e);
+  const month=e<14?e-1:e-13;
+  const year=month>2?c-4716:c-4715;
+  const hour=(f*24);
+  return {year,month,day,hour};
+}
+
+// ── Lahiri Ayanamsa (Chitrapaksha) ──
+// Value at J2000.0 = 23.8538° + precession 50.2388"/yr
+// Source: Lahiri, N.C. (1963); confirmed in Indian Ephemeris
+function lahiriAyanamsa(jd){
+  const T=(jd-2451545.0)/36525.0;
+  return 23.8538+T*50.2388/3600.0;
+}
+
+// ── Convert tropical to sidereal ──
+function sidLon(tropLon, jd){
+  let s=tropLon-lahiriAyanamsa(jd);
+  return((s%360)+360)%360;
+}
+
+// ── Sun geocentric longitude (Meeus Ch.25) ──
+// Accuracy: ~0.01° (better than 1 arcminute)
+function sunLon(jd){
+  const T=(jd-2451545.0)/36525.0;
+  let L0=280.46646+36000.76983*T+0.0003032*T*T;
+  L0=((L0%360)+360)%360;
+  let M=357.52911+35999.05029*T-0.0001537*T*T;
+  M=((M%360)+360)%360;
+  const Mr=M*Math.PI/180;
+  const C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(Mr)
+         +(0.019993-0.000101*T)*Math.sin(2*Mr)
+         +0.000289*Math.sin(3*Mr);
+  let lon=L0+C;
+  // Apparent longitude (correct for aberration and nutation)
+  const omega=125.04-1934.136*T;
+  lon=lon-0.00569-0.00478*Math.sin(omega*Math.PI/180);
+  return((lon%360)+360)%360;
+}
+
+// ── Moon geocentric longitude (Meeus Ch.47, full series) ──
+// Accuracy: ~0.009° = ~30 arcseconds
+function moonLon(jd){
+  const T=(jd-2451545.0)/36525.0;
+  let Lp=218.3164477+481267.88123421*T-0.0015786*T*T+T*T*T/538841-T*T*T*T/65194000;
+  let M=357.5291092+35999.0502909*T-0.0001536*T*T+T*T*T/24490000;
+  let Mp=134.9633964+477198.8675055*T+0.0087414*T*T+T*T*T/69699-T*T*T*T/14712000;
+  let F=93.2720950+483202.0175233*T-0.0036539*T*T-T*T*T/3526000+T*T*T*T/863310000;
+  const D=297.8501921+445267.1114034*T-0.0018819*T*T+T*T*T/545868-T*T*T*T/113065000;
+  const r=x=>((x%360)+360)%360*Math.PI/180;
+  const Dr=r(D),Mr=r(M),Mpr=r(Mp),Fr=r(F),Lpr=r(Lp);
+  const E=1-0.002516*T-0.0000074*T*T;
+  let dL=6288774*Math.sin(Mpr)
+    +1274027*Math.sin(2*Dr-Mpr)+658314*Math.sin(2*Dr)+213618*Math.sin(2*Mpr)
+    -185116*E*Math.sin(Mr)-114332*Math.sin(2*Fr)+58793*Math.sin(2*Dr-2*Mpr)
+    +57066*E*Math.sin(2*Dr-Mr-Mpr)+53322*Math.sin(2*Dr+Mpr)+45758*E*Math.sin(2*Dr-Mr)
+    -40923*E*Math.sin(Mr-Mpr)-34720*Math.sin(Dr)-30383*E*Math.sin(Mr+Mpr)
+    +15327*Math.sin(2*Dr-2*Fr)-12528*Math.sin(Mpr+2*Fr)+10980*Math.sin(Mpr-2*Fr)
+    +10675*Math.sin(4*Dr-Mpr)+10034*Math.sin(3*Mpr)+8548*Math.sin(4*Dr-2*Mpr)
+    -7888*E*Math.sin(2*Dr+Mr-Mpr)-6766*E*Math.sin(2*Dr+Mr)-5163*Math.sin(Dr-Mpr)
+    +4987*E*Math.sin(Dr+Mr)+4036*E*Math.sin(2*Dr-Mr+Mpr)+3994*Math.sin(2*Dr+2*Mpr)
+    +3861*Math.sin(4*Dr)+3665*Math.sin(2*Dr-3*Mpr)-2689*E*Math.sin(Mr-2*Mpr)
+    -2602*Math.sin(2*Dr-Mpr+2*Fr)+2390*E*Math.sin(2*Dr-Mr-2*Mpr)-2348*Math.sin(Dr+Mpr)
+    +2236*E*E*Math.sin(2*Dr-2*Mr)-2120*E*Math.sin(Mr+2*Mpr)-2069*E*E*Math.sin(2*Mr)
+    +2048*E*E*Math.sin(2*Dr-2*Mr-Mpr)-1773*Math.sin(2*Dr+Mpr-2*Fr)
+    -1595*Math.sin(2*Dr+2*Fr)+1215*E*Math.sin(4*Dr-Mr-Mpr)
+    -1110*Math.sin(2*Mpr+2*Fr)-892*Math.sin(3*Dr-Mpr)-810*E*Math.sin(2*Dr+Mr+Mpr)
+    +759*E*Math.sin(4*Dr-Mr-2*Mpr)-713*E*E*Math.sin(2*Mr-Mpr)
+    -700*E*E*Math.sin(2*Dr+2*Mr-Mpr)+691*E*Math.sin(2*Dr+Mr-2*Mpr)
+    +596*E*Math.sin(2*Dr-Mr-2*Fr)+549*Math.sin(4*Dr+Mpr)+537*Math.sin(4*Mpr)
+    +520*E*Math.sin(4*Dr-Mr)-487*Math.sin(Dr-2*Mpr)-399*E*Math.sin(2*Dr+Mr-2*Fr)
+    -381*Math.sin(2*Mpr-2*Fr)+351*E*Math.sin(Dr+Mr+Mpr)-340*Math.sin(3*Dr-2*Mpr)
+    +330*Math.sin(4*Dr-3*Mpr)+327*E*Math.sin(2*Dr-Mr+2*Mpr)-323*E*E*Math.sin(2*Mr+Mpr)
+    +299*E*Math.sin(Dr+Mr-Mpr)+294*Math.sin(2*Dr+3*Mpr);
+  dL/=1000000;
+  let lon=Lp+dL;
+  return((lon%360)+360)%360;
+}
+
+// ── Planetary positions (geocentric, Meeus Ch.33 simplified) ──
+// Accuracy: ~1–2° sufficient for house placement in Jyotish
+function planetLon(jd, planet){
+  const T=(jd-2451545.0)/36525.0;
+  const r=x=>((x%360)+360)%360*Math.PI/180;
+  
+  // Orbital elements [L0, L1, a, e0, e1, i, Ω, ω]
+  // Source: Meeus Table 33.a (mean elements J2000.0)
+  const el={
+    Mercury:[252.250324,149472.6746358,0.387098310,0.20563175,0.000020407,7.004986,48.330893,77.456119],
+    Venus:  [181.979801, 58517.8156760,0.723329820,0.00677188,-0.000047766,3.394662,76.679920,131.563707],
+    Mars:   [355.433275, 19140.2993313,1.523679342,0.09340062,0.000090483,1.849726,49.558093,336.060234],
+    Jupiter:[ 34.351519,  3034.9056606,5.202603209,0.04849793,0.000163225,1.303267,100.464407,14.331207],
+    Saturn: [ 50.077444,  1222.1138488,9.537070332,0.05550825,-0.0003114600,2.488879,113.665503,93.057237],
+  };
+
+  function helio(name){
+    const[L0,L1,a,e0,e1,i,Om,w]=el[name];
+    const L=((L0+L1*T)%360+360)%360;
+    const e=e0+e1*T;
+    // Mean anomaly
+    let M=((L-w)%360+360)%360;
+    const Mr=M*Math.PI/180;
+    // Equation of center (2 terms sufficient for ~1° accuracy)
+    const C=(2*e-e*e*e/4)*Math.sin(Mr)+(5/4)*e*e*Math.sin(2*Mr)+(13/12)*e*e*e*Math.sin(3*Mr);
+    const Cr=C*Math.PI/180;
+    // True longitude
+    let trueLon=((L+C*180/Math.PI)%360+360)%360;
+    const trueAnomaly=((M+C*180/Math.PI)%360+360)%360*Math.PI/180;
+    // Heliocentric distance
+    const r=a*(1-e*e)/(1+e*Math.cos(trueAnomaly));
+    const ir=i*Math.PI/180, Or=Om*Math.PI/180;
+    // Heliocentric ecliptic coordinates
+    const u=trueLon*Math.PI/180-Or;
+    const x=r*(Math.cos(Or)*Math.cos(u)-Math.sin(Or)*Math.sin(u)*Math.cos(ir));
+    const y=r*(Math.sin(Or)*Math.cos(u)+Math.cos(Or)*Math.sin(u)*Math.cos(ir));
+    const z=r*Math.sin(u)*Math.sin(ir);
+    return{x,y,z,r,trueLon};
+  }
+
+  // Earth heliocentric position
+  const eLon=((sunLon(jd)+180)%360+360)%360; // Earth is opposite Sun
+  const sunTropLon=sunLon(jd);
+  // Simplified Earth position using Sun longitude
+  const er=1.0; // ~1 AU average
+  const Ler=eLon*Math.PI/180;
+  const xe=er*Math.cos(Ler), ye=er*Math.sin(Ler), ze=0;
+
+  if(planet==='Rahu'){
+    // Mean ascending node (Meeus Ch.47) — Rahu
+    let N=125.04452-1934.136261*T+0.0020708*T*T+T*T*T/450000;
+    return((N%360)+360)%360;
+  }
+  if(planet==='Ketu'){
+    let N=125.04452-1934.136261*T+0.0020708*T*T+T*T*T/450000;
+    return((N+180)%360+360)%360;
+  }
+
+  const p=helio(planet);
+  // Geocentric coordinates
+  const gx=p.x-xe, gy=p.y-ye, gz=p.z-ze;
+  let lon=Math.atan2(gy,gx)*180/Math.PI;
+  return((lon%360)+360)%360;
+}
+
+// ── Obliquity of ecliptic (Meeus Ch.22) ──
+function obliquity(jd){
+  const T=(jd-2451545.0)/36525.0;
+  return 23.4392911-0.01300416667*T-0.0001638889*T*T+0.5036111*T*T*T/1000000;
+}
+
+// ── Local Sidereal Time → Ascendant (Lagna) ──
+// Source: Meeus Ch.14 + ecliptic coordinate formula
+function calcLagna(jd, lat, lon){
+  const T=(jd-2451545.0)/36525.0;
+  // Greenwich Mean Sidereal Time (degrees)
+  let GMST=280.46061837+360.98564736629*(jd-2451545)+0.000387933*T*T-T*T*T/38710000;
+  GMST=((GMST%360)+360)%360;
+  // Local Sidereal Time
+  let LST=((GMST+lon)%360+360)%360;
+  const LST_r=LST*Math.PI/180;
+  const lat_r=lat*Math.PI/180;
+  const eps=obliquity(jd)*Math.PI/180;
+  // Ascendant ecliptic longitude (Meeus formula)
+  let asc=Math.atan2(Math.cos(LST_r), -(Math.sin(LST_r)*Math.cos(eps)+Math.tan(lat_r)*Math.sin(eps)))*180/Math.PI;
+  asc=((asc%360)+360)%360;
+  return asc; // Tropical — apply ayanamsa separately
+}
+
+// ═══════════════════════════════════════════════
+// JYOTISH LOOKUP TABLES
+// Source: Brihat Parashara Hora Shastra + traditional Jyotish
+// ═══════════════════════════════════════════════
+
+const RASHIS=['मेष','वृष','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुम्भ','मीन'];
+const RASHI_EN=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const RASHI_LORD=['Mars','Venus','Mercury','Moon','Sun','Mercury','Venus','Mars','Jupiter','Saturn','Saturn','Jupiter'];
+const RASHI_ELEM=['Fire','Earth','Air','Water','Fire','Earth','Air','Water','Fire','Earth','Air','Water'];
+const RASHI_QUAL=['Movable','Fixed','Dual','Movable','Fixed','Dual','Movable','Fixed','Dual','Movable','Fixed','Dual'];
+
+const NAKSHATRAS=[
+  ['अश्विनी','Ashwini','Ketu','0°00′–13°20′ Aries','Horse head'],
+  ['भरणी','Bharani','Venus','13°20′–26°40′ Aries','Yoni (womb)'],
+  ['कृत्तिका','Krittika','Sun','26°40′ Aries–10°00′ Taurus','Razor / flame'],
+  ['रोहिणी','Rohini','Moon','10°00′–23°20′ Taurus','Chariot'],
+  ['मृगशिरा','Mrigashira','Mars','23°20′ Taurus–6°40′ Gemini','Deer head'],
+  ['आर्द्रा','Ardra','Rahu','6°40′–20°00′ Gemini','Teardrop / gem'],
+  ['पुनर्वसु','Punarvasu','Jupiter','20°00′ Gemini–3°20′ Cancer','Bow & quiver'],
+  ['पुष्य','Pushya','Saturn','3°20′–16°40′ Cancer','Flower / udder'],
+  ['आश्लेषा','Ashlesha','Mercury','16°40′–30°00′ Cancer','Serpent coiled'],
+  ['मघा','Magha','Ketu','0°00′–13°20′ Leo','Royal throne'],
+  ['पूर्वाफाल्गुनी','Purva Phalguni','Venus','13°20′–26°40′ Leo','Fig tree / bed'],
+  ['उत्तराफाल्गुनी','Uttara Phalguni','Sun','26°40′ Leo–10°00′ Virgo','Bed / cot'],
+  ['हस्त','Hasta','Moon','10°00′–23°20′ Virgo','Hand / fist'],
+  ['चित्रा','Chitra','Mars','23°20′ Virgo–6°40′ Libra','Pearl / bright star'],
+  ['स्वाति','Swati','Rahu','6°40′–20°00′ Libra','Sword / coral'],
+  ['विशाखा','Vishakha','Jupiter','20°00′ Libra–3°20′ Scorpio','Triumphal arch'],
+  ['अनुराधा','Anuradha','Saturn','3°20′–16°40′ Scorpio','Umbrella / lotus'],
+  ['ज्येष्ठा','Jyeshtha','Mercury','16°40′–30°00′ Scorpio','Earring / talisman'],
+  ['मूल','Mula','Ketu','0°00′–13°20′ Sagittarius','Tied bunch of roots'],
+  ['पूर्वाषाढा','Purva Ashadha','Venus','13°20′–26°40′ Sagittarius','Fan / tusk'],
+  ['उत्तराषाढा','Uttara Ashadha','Sun','26°40′ Sagittarius–10°00′ Capricorn','Elephant tusk'],
+  ['श्रवण','Shravana','Moon','10°00′–23°20′ Capricorn','Ear / three footprints'],
+  ['धनिष्ठा','Dhanishtha','Mars','23°20′ Capricorn–6°40′ Aquarius','Drum / flute'],
+  ['शतभिषा','Shatabhisha','Rahu','6°40′–20°00′ Aquarius','1000 flowers / stars'],
+  ['पूर्वाभाद्रपदा','Purva Bhadrapada','Jupiter','20°00′ Aquarius–3°20′ Pisces','Sword / two front legs'],
+  ['उत्तराभाद्रपदा','Uttara Bhadrapada','Saturn','3°20′–16°40′ Pisces','Two back legs of bed'],
+  ['रेवती','Revati','Mercury','16°40′–30°00′ Pisces','Drum / fish'],
+];
+
+// Vimshottari dasha order & periods (source: Brihat Parashara Hora Shastra)
+const DASHA_ORDER=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+const DASHA_YEARS=[7,20,6,10,7,18,16,19,17];
+const DASHA_COLORS={Ketu:'#8B4513',Venus:'#FF69B4',Sun:'#FFA500',Moon:'#C0C0FF',Mars:'#FF4444',Rahu:'#4A4A8A',Jupiter:'#FFD700',Saturn:'#6B8E23',Mercury:'#3CB371'};
+const DASHA_NAKSATRA_LORD=['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury','Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+
+const GRAHAS=[
+  ['सूर्य','Sun','Su',6,'Leo','Aries','Libra'],
+  ['चन्द्र','Moon','Mo',10,'Cancer','Taurus','Scorpio'],
+  ['मंगल','Mars','Ma',7,'Aries & Scorpio','Capricorn','Cancer'],
+  ['बुध','Mercury','Bu',17,'Gemini & Virgo','Virgo','Pisces'],
+  ['गुरु','Jupiter','Gu',16,'Sagittarius & Pisces','Cancer','Capricorn'],
+  ['शुक्र','Venus','Sh',20,'Taurus & Libra','Pisces','Virgo'],
+  ['शनि','Saturn','Sa',19,'Capricorn & Aquarius','Libra','Aries'],
+  ['राहु','Rahu','Ra',18,'—','Gemini/Virgo*','Sagittarius*'],
+  ['केतु','Ketu','Ke',7,'—','Sagittarius*','Gemini*'],
+];
+
+// ═══════════════════════════════════════════════
+// PANCHANG NAMES
+// ═══════════════════════════════════════════════
+const TITHI_NAMES=['प्रतिपदा','द्वितीया','तृतीया','चतुर्थी','पञ्चमी','षष्ठी','सप्तमी','अष्टमी','नवमी','दशमी','एकादशी','द्वादशी','त्रयोदशी','चतुर्दशी','पूर्णिमा/अमावस्या'];
+const TITHI_EN=['Pratipada','Dvitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dvadashi','Trayodashi','Chaturdashi','Purnima/Amavasya'];
+const YOGA_NAMES=['विष्कुम्भ','प्रीति','आयुष्मान','सौभाग्य','शोभन','अतिगण्ड','सुकर्मा','धृति','शूल','गण्ड','वृद्धि','ध्रुव','व्याघात','हर्षण','वज्र','सिद्धि','व्यतीपात','वरियान','परिघ','शिव','सिद्ध','साध्य','शुभ','शुक्ल','ब्रह्म','इन्द्र','वैधृति'];
+const KARANA_NAMES=['बव','बालव','कौलव','तैतिल','गर','वणिज','विष्टि','शकुनि','चतुष्पाद','नाग','किस्तुघ्न'];
+const VARA_NAMES=['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'];
+const VARA_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+// Rahu Kaal slots by weekday (offset from sunrise in 1.5-hour units)
+const RAHU_KAAL_SLOT=[8,2,7,5,6,4,3]; // 0=Sun, slot index in 8 parts of day
+
+// ═══════════════════════════════════════════════
+// BS/AD CONVERSION
+// Reference: Government of Nepal published Panchang
+// ═══════════════════════════════════════════════
+
+// Baisakh 1 dates for BS years 2070–2090
+const BAISAKH1={
+  2070:[2013,4,14],2071:[2014,4,14],2072:[2015,4,14],2073:[2016,4,13],
+  2074:[2017,4,14],2075:[2018,4,14],2076:[2019,4,14],2077:[2020,4,13],
+  2078:[2021,4,14],2079:[2022,4,14],2080:[2023,4,14],2081:[2024,4,13],
+  2082:[2025,4,14],2083:[2026,4,14],2084:[2027,4,14],2085:[2028,4,12],
+  2086:[2029,4,14],2087:[2030,4,14],2088:[2031,4,14],2089:[2032,4,13],
+  2090:[2033,4,14],
+};
+
+// Average BS month lengths (approx — exact varies year to year by ±1 day)
+const BS_MONTH_DAYS=[31,31,31,32,31,31,30,29,30,29,30,30];
+const BS_MONTH_NAMES=['बैशाख','जेठ','असार','श्रावण','भाद्र','आश्विन','कार्तिक','मंसिर','पौष','माघ','फाल्गुन','चैत्र'];
+
+function adToJD(y,m,d){return toJD(y,m,d);}
+
+function jdToBs(jd){
+  const adDt=fromJD(jd);
+  // Find closest BS year
+  let bsYear=Object.keys(BAISAKH1).find(k=>{
+    const[y,m,d]=BAISAKH1[k]; const jd1=toJD(y,m,d);
+    const k2=parseInt(k)+1;
+    if(!BAISAKH1[k2])return false;
+    const[y2,m2,d2]=BAISAKH1[k2]; const jd2=toJD(y2,m2,d2);
+    return jd>=jd1&&jd<jd2;
+  });
+  if(!bsYear){
+    // Fallback: approximate
+    const approxBS=adDt.year+(adDt.month>4||(adDt.month===4&&adDt.day>=14)?57:56);
+    return{year:approxBS,month:1,day:1,approx:true};
+  }
+  bsYear=parseInt(bsYear);
+  const[by,bm,bd]=BAISAKH1[bsYear];
+  const bsJD1=toJD(by,bm,bd);
+  let dayOfYear=Math.floor(jd-bsJD1); // 0-indexed day from Baisakh 1
+  let month=0;
+  for(let i=0;i<12;i++){
+    if(dayOfYear<BS_MONTH_DAYS[i])break;
+    dayOfYear-=BS_MONTH_DAYS[i]; month++;
+  }
+  return{year:bsYear,month:month+1,day:dayOfYear+1,approx:false};
+}
+
+function bsToJD(bsYear,bsMonth,bsDay){
+  // Find JD of Baisakh 1 of that BS year
+  let jd1;
+  if(BAISAKH1[bsYear]){
+    const[y,m,d]=BAISAKH1[bsYear]; jd1=toJD(y,m,d);
+  } else {
+    // Approximation: ~365.25 days/year from known reference
+    const[ry,rm,rd]=BAISAKH1[2081]; const refJD=toJD(ry,rm,rd);
+    jd1=refJD+(bsYear-2081)*365.25;
+  }
+  let offset=0;
+  for(let i=0;i<bsMonth-1;i++)offset+=BS_MONTH_DAYS[i];
+  offset+=bsDay-1;
+  return jd1+offset;
+}
+
+// ═══════════════════════════════════════════════
+// HELPER FUNCTIONS
+// ═══════════════════════════════════════════════
+function lonToStr(lon){
+  const d=Math.floor(lon);
+  const m=Math.floor((lon-d)*60);
+  const s=Math.floor(((lon-d)*60-m)*60);
+  const rashi=Math.floor(lon/30);
+  const inRashi=lon%30;
+  const rd=Math.floor(inRashi), rm=Math.floor((inRashi-rd)*60);
+  return`${RASHIS[rashi]} ${rd}°${rm}′ (${lon.toFixed(2)}°)`;
+}
+function lonToRashi(lon){return Math.floor(lon/30);}
+function lonToNakshatra(lon){return Math.floor(lon/(360/27));}
+function normalize(x){return((x%360)+360)%360;}
+
+function formatDate(jd){
+  const d=fromJD(jd);
+  return`${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════════
+// PANCHANG CALCULATOR
+// ═══════════════════════════════════════════════
+function calcPanchang(){
+  const dateStr=document.getElementById('p-date').value;
+  const timeStr=document.getElementById('p-time').value;
+  const lat=parseFloat(document.getElementById('p-lat').value)||27.7172;
+  const lon=parseFloat(document.getElementById('p-lon').value)||85.3240;
+  const tz=parseFloat(document.getElementById('p-tz').value)||5.75;
+  if(!dateStr)return;
+
+  const[y,m,d]=dateStr.split('-').map(Number);
+  const[hr,mn]=timeStr.split(':').map(Number);
+  const utcHour=hr+mn/60-tz;
+  const jd=toJD(y,m,d,Math.floor(utcHour),Math.round((utcHour%1)*60));
+
+  const sunT=sidLon(sunLon(jd),jd);
+  const moonT=sidLon(moonLon(jd),jd);
+
+  // Tithi
+  let diff=normalize(moonT-sunT);
+  const tithiIdx=Math.floor(diff/12);
+  const paksha=tithiIdx<15?'शुक्ल पक्ष (Shukla)':'कृष्ण पक्ष (Krishna)';
+  const tithiNum=tithiIdx%15;
+
+  // Nakshatra
+  const nakIdx=lonToNakshatra(moonT);
+
+  // Yoga
+  let yogaLon=normalize(sunT+moonT);
+  const yogaIdx=Math.floor(yogaLon/(360/27));
+
+  // Karana
+  const karanaIdx=Math.floor(diff/6)%11;
+
+  // Vara
+  const varaIdx=Math.floor(jd+1.5)%7;
+
+  // Sunrise approx (Nepal 5:45 UTC, sunrise ~6am) — for Rahu Kaal
+  const sunriseHr=6.0, sunsetHr=18.5;
+  const dayLen=sunsetHr-sunriseHr;
+  const rahuSlot=RAHU_KAAL_SLOT[varaIdx];
+  const rahuStart=sunriseHr+(rahuSlot-1)*dayLen/8;
+  const rahuEnd=rahuStart+dayLen/8;
+  function toHHMM(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`}
+
+  // BS Date
+  const bsDate=jdToBs(jd);
+  const bsStr=`${bsDate.year} ${BS_MONTH_NAMES[bsDate.month-1]} ${bsDate.day}${bsDate.approx?' (approx.)':''}`;
+
+  document.getElementById('panch-result').innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px 12px;margin-bottom:12px;text-align:center">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">विक्रम सम्वत् / Bikram Sambat</div>
+      <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:18px;color:var(--gold)">${bsStr}</div>
+    </div>
+    <div class="panch-grid">
+      <div class="panch-card">
+        <div class="label">वार / Vara (Weekday)</div>
+        <div class="value">${VARA_NAMES[varaIdx]}</div>
+        <div class="value-en">${VARA_EN[varaIdx]}</div>
+      </div>
+      <div class="panch-card">
+        <div class="label">तिथि / Tithi</div>
+        <div class="value">${TITHI_NAMES[tithiNum]}</div>
+        <div class="value-en">${TITHI_EN[tithiNum]} · ${paksha}</div>
+        <div class="num">Diff: ${diff.toFixed(2)}°</div>
+      </div>
+      <div class="panch-card">
+        <div class="label">नक्षत्र / Nakshatra</div>
+        <div class="value">${NAKSHATRAS[nakIdx][0]}</div>
+        <div class="value-en">${NAKSHATRAS[nakIdx][1]} · Lord: ${NAKSHATRAS[nakIdx][2]}</div>
+        <div class="num">Moon: ${moonT.toFixed(2)}°</div>
+      </div>
+      <div class="panch-card">
+        <div class="label">योग / Yoga</div>
+        <div class="value">${YOGA_NAMES[yogaIdx]}</div>
+        <div class="value-en">Index ${yogaIdx+1}/27</div>
+        <div class="num">S+M: ${yogaLon.toFixed(2)}°</div>
+      </div>
+      <div class="panch-card">
+        <div class="label">करण / Karana</div>
+        <div class="value">${KARANA_NAMES[karanaIdx]}</div>
+        <div class="value-en">Karana ${karanaIdx+1}</div>
+      </div>
+      <div class="panch-card rahu-kaal">
+        <div class="label">राहु काल / Rahu Kaal</div>
+        <div class="value" style="color:#FF6060">${toHHMM(rahuStart)} – ${toHHMM(rahuEnd)}</div>
+        <div class="value-en">Approx. for Nepal</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px 12px">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">ग्रह स्थिति / Planetary Positions (Sidereal)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="font-size:12px"><span style="color:var(--amber)">☉ Surya:</span> ${lonToStr(sunT)}</div>
+        <div style="font-size:12px"><span style="color:#C0C0FF">☽ Chandra:</span> ${lonToStr(moonT)}</div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// KUNDALI GENERATOR
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// PLANET DIGNITIES
+// Source: Brihat Parashara Hora Shastra Ch.3
+// ═══════════════════════════════════════════════
+const EXALT={Sun:0,Moon:1,Mars:9,Mercury:5,Jupiter:3,Venus:11,Saturn:6};
+const DEBIL={Sun:6,Moon:7,Mars:3,Mercury:11,Jupiter:9,Venus:5,Saturn:0};
+const OWN  ={Sun:[4],Moon:[3],Mars:[0,7],Mercury:[2,5],Jupiter:[8,11],Venus:[1,6],Saturn:[9,10]};
+
+function dignity(planet,rashi){
+  if(EXALT[planet]===rashi)return'⬆ Exalted';
+  if(DEBIL[planet]===rashi)return'⬇ Debilitated';
+  if(OWN[planet]&&OWN[planet].includes(rashi))return'🏠 Own Sign';
+  return'';
+}
+
+// ═══════════════════════════════════════════════
+// INTERPRETATION DATA
+// Source: Brihat Parashara Hora Shastra, Phaladeepika, Saravali
+// ═══════════════════════════════════════════════
+const LAGNA_MEANINGS=[
+  {n:'मेष (Aries)',   e:'Ruled by Mars. Strong, courageous, and action-oriented. Natural leader with a competitive spirit. Physical body is generally robust. Can be impulsive — learning patience is the life lesson. Government, military, and athletic careers suit well.'},
+  {n:'वृष (Taurus)',  e:'Ruled by Venus. Patient, reliable, and comfort-seeking. Strong artistic sense and love of beauty. Accumulates wealth steadily through perseverance. Loyal in relationships. May resist change — adaptability brings growth.'},
+  {n:'मिथुन (Gemini)',e:'Ruled by Mercury. Intelligent, curious, and excellent communicator. Quick-witted and versatile. Success in writing, media, trade, or teaching. Mind works fast — developing focus brings mastery. Duality in nature.'},
+  {n:'कर्क (Cancer)', e:'Ruled by Moon. Deeply emotional, nurturing, and intuitive. Strong family bonds especially with the mother. Sensitive to environment and people. Real estate, hospitality, and public service suit well. Inner life is rich.'},
+  {n:'सिंह (Leo)',    e:'Ruled by Sun. Dignified, generous, and naturally authoritative. Commands respect without trying. Strong constitution. Government, administration, and leadership positions suit well. Pride must be balanced with humility.'},
+  {n:'कन्या (Virgo)', e:'Ruled by Mercury. Analytical, detail-oriented, and service-minded. Excellent at problem-solving and organization. Health-conscious. Medicine, accounting, research, and healing professions suit well. Perfectionism is both strength and challenge.'},
+  {n:'तुला (Libra)',  e:'Ruled by Venus. Diplomatic, harmonious, and relationship-focused. Natural mediator. Strong aesthetic sense. Law, partnerships, art, and diplomacy suit well. Seeks balance in all areas. Indecision can be overcome through self-trust.'},
+  {n:'वृश्चिक (Scorpio)',e:'Ruled by Mars/Ketu. Intense, perceptive, and transformative. Deep inner life and strong intuition. Not easily fooled. Research, occult, surgery, and psychology suit well. Emotional depth is both power and challenge.'},
+  {n:'धनु (Sagittarius)',e:'Ruled by Jupiter. Philosophical, optimistic, and freedom-loving. Strong moral compass. Teaching, law, religion, and higher education suit well. Foreign travel brings fortune. Wisdom comes through experience.'},
+  {n:'मकर (Capricorn)',e:'Ruled by Saturn. Disciplined, ambitious, and methodical. Rises slowly but achieves lasting success. Administration, engineering, and management suit well. Life improves significantly after age 35. Patience is the greatest virtue.'},
+  {n:'कुम्भ (Aquarius)',e:'Ruled by Saturn. Humanitarian, independent, and intellectually original. Drawn to social causes and innovation. Technology, social work, and research suit well. Large social networks bring gains. Detachment is both strength and lesson.'},
+  {n:'मीन (Pisces)',  e:'Ruled by Jupiter. Compassionate, spiritual, and imaginative. Strong intuition and empathic nature. Art, spirituality, healing, and social service suit well. Spiritual liberation is the ultimate goal. Practical grounding brings balance.'},
+];
+
+const PH={
+  Sun:{
+    1:'Strong personality with natural authority. Leadership qualities evident. Vitality is good. Government connections benefit the native. May be self-willed — humility brings greater success.',
+    2:'Powerful speech but can be harsh at times. Wealth connected to authority or government. Family relationships need diplomacy. Eye health needs attention.',
+    3:'Courage and initiative are strong. Success through own efforts. Benefits from younger siblings. Short journeys are productive. Writing or media work suits.',
+    4:'Comfort in homeland. Heart health needs monitoring. Mother may be strong-willed. Property gains through authority. Domestic happiness comes after effort.',
+    5:'Sharp intelligence and creativity. Children may be limited or bring challenges. Political acumen. Speculation should be approached carefully.',
+    6:'Defeats enemies and competition. Excellent for government service or health sector. Physical stamina is strong. Success in disputes and legal matters.',
+    7:'Spouse tends to be proud or dominant. Partnerships with authority figures. Business with government or public sector. Compromise is key to harmony.',
+    8:'Transformation through crises. Longevity requires health attention especially mid-life. Hidden wealth possible. Interest in occult and mysteries.',
+    9:'Highly fortunate and dharmic. Father is influential and respected. Long journeys bring wisdom. Higher education and religious study flourish.',
+    10:'Exceptional career success. Government recognition or high position. Fame in profession. Strong public presence. Career in administration or leadership.',
+    11:'Good income from authority or government connections. Influential elder siblings. Social circle includes powerful people. Gains are realized in middle age.',
+    12:'Foreign travel or spiritual journeys. Expenses through authority. Eye concerns possible. Ashram or institutional service. Inner illumination comes through solitude.',
+  },
+  Moon:{
+    1:'Charming and emotionally expressive. Popular with the public. Health fluctuates with emotional state. Strong maternal connection. Imagination is vivid.',
+    2:'Comfortable family life and wealth. Sweet speech attracts people. Food brings joy. Financial security through family or hospitality. Wealth fluctuates.',
+    3:'Emotional in communication. Active mind with frequent short journeys. Siblings are nurturing. Writing talent. Restlessness should be channeled creatively.',
+    4:'Highly auspicious — own sign benefits. Deep peace in home. Excellent relationship with mother. Property gains. Agricultural or real estate success.',
+    5:'Romantic and emotionally creative. Children bring great joy. Good intuition. Love of arts and entertainment. Speculation with caution.',
+    6:'Emotional stress affects health. Compassionate in service. Maternal relatives have conflicts. Persistence overcomes all obstacles. Alternative healing interests.',
+    7:'Emotional and sensitive in partnerships. Spouse is nurturing and attractive. Business with the public thrives. Marriage brings emotional fulfillment.',
+    8:'Deep psychic sensitivity. Long life with health fluctuations. Inheritance possible. Interest in the mysteries of life. Emotional depth is a hidden treasure.',
+    9:'Deeply spiritual and intuitive. Mother is a dharmic guide. Fortune through journeys. Higher philosophy resonates deeply. Prophetic dreams.',
+    10:'Public recognition and popularity. Career with the masses or public service. Nurturing professions flourish. Mother plays role in career success.',
+    11:'Steady income and large social circle. Elder sibling is caring. Gains through public contacts. Wishes fulfilled especially in middle life.',
+    12:'Foreign travel or residence likely. Emotional and spiritual dreams. Expenses through women or family. Hospital or ashram connections. Inner peace through solitude.',
+  },
+  Mars:{
+    1:'Energetic, bold, and athletic. Strong physical constitution. Leadership in action. Accidents and injuries should be guarded against. Drive is exceptional.',
+    2:'Harsh speech can create family discord. Wealth through courage and effort. Dental or blood-related health watch. Family disputes possible.',
+    3:'Exceptional courage. Success through initiative. Younger siblings are bold. Military, sports, or active professions suit. Short journeys are frequent.',
+    4:'Property and real estate gains. Home environment can be turbulent. Mother\'s health needs attention. Engineering or construction brings success.',
+    5:'Sharp and competitive intellect. Children are energetic. Speculation risks are high. Sports, military strategy, and technical fields suit.',
+    6:'Destroys enemies completely. Excellent placement for surgeons, military, police. Defeats all competition. Physical stamina is exceptional.',
+    7:'Partnership conflicts are possible. Spouse is energetic but argumentative. Business partnerships need care. Passion in relationships is intense.',
+    8:'Longevity concerns — accidents should be avoided. Inheritance through conflict. Occult interests. Transformation comes through intense experiences.',
+    9:'Father is dynamic and independent. Religious and philosophical arguments. Foreign journeys bring action. Law and justice are important.',
+    10:'Excellent for military, police, surgery, or engineering career. High ambition achieves results. Strong position of authority. Career involves action.',
+    11:'Gains through courage and initiative. Elder sibling is dynamic. Income from engineering, military, or sports. Financial gains through competition.',
+    12:'Expenses through disputes or accidents. Foreign enemies. Spiritual warrior. Hospitals and isolation connected. Energy needs positive channels.',
+  },
+  Mercury:{
+    1:'Intelligent, witty, and communicative. Quick mind and good education. Youthful appearance throughout life. Success in writing, trade, and intellectual fields.',
+    2:'Excellent speech and writing. Financial gains through intelligence and trade. Family education is valued. Multiple income sources.',
+    3:'Outstanding communication skills. Success in writing, media, teaching. Frequent productive journeys. Siblings are intellectually connected.',
+    4:'Education in mother tongue. Comfort through intellectual work. Property through intelligent planning. Mother is educated.',
+    5:'Highly analytical and creative mind. Excellent for education. Children are intelligent. Success in writing, education, or astrology.',
+    6:'Success through analytical service. Health profession or accounting thrives. Overcomes enemies through intelligence. Debt management is careful.',
+    7:'Intelligent and communicative spouse. Partnership in intellectual or trade business. Multiple partnerships possible. Contracts and agreements are important.',
+    8:'Research aptitude. Investigative skills are sharp. Hidden knowledge is accessed. Longevity through careful health habits. Writing about mysteries.',
+    9:'Higher education flourishes. Philosophy and astrology interest. Father is educated. Writing about spiritual topics. Foreign language ability.',
+    10:'Excellent career in communications, writing, education, or trade. Multiple career paths. Intellectual recognition. Business acumen is sharp.',
+    11:'Multiple income streams. Large intellectual network. Elder sibling is educated. Gains through writing, trade, or communication. Financial planning is good.',
+    12:'Foreign journeys for education. Spiritual writing. Expenses through education or trade. Hidden intelligence. Meditation and mantra practice benefit.',
+  },
+  Jupiter:{
+    1:'Fortunate, wise, and respected. Auspicious birth. Natural teacher or advisor. Good health and longevity. Spiritual inclination from early life. Abundance in life.',
+    2:'Wealth accumulates steadily. Eloquent and wise speech. Family is educated and fortunate. Financial prosperity especially after marriage. Food and comfort appreciated.',
+    3:'Philosophical communication. Religious siblings. Short journeys for spiritual purposes. Teaching and preaching ability. Writing on dharmic topics.',
+    4:'Comfortable and prosperous home. Mother is wise and religious. Property gains. Peace of mind. Vehicles and conveniences. Auspicious domestic life.',
+    5:'High intelligence and wisdom. Excellent children — often sons. Good education. Past-life merits strongly felt. Spiritual practices bring results.',
+    6:'Gracious in service. Overcomes enemies through wisdom rather than force. Health generally good. Law and justice professions benefit.',
+    7:'Excellent for marriage — spouse is wise, educated, and fortunate. Business partnerships flourish. Legal and advisory partnerships prosper.',
+    8:'Long life. Research into hidden knowledge. Inheritance is likely. Spiritual transformation. Interest in Vedic studies, occult, or mysticism.',
+    9:'Extremely auspicious — own sign benefits. Deep spiritual life. Father is a guru figure. Pilgrimage and higher education. Fortune multiplies.',
+    10:'Excellent career as teacher, judge, priest, or advisor. Public recognition for wisdom. Promotions come steadily. Career in education or law.',
+    11:'Excellent income and gains. Elder sibling is fortunate. Large and beneficial social circle. Wishes are fulfilled. Financial prosperity grows.',
+    12:'Spiritual liberation. Foreign journeys for pilgrimage. Charitable nature. Ashram or spiritual institution connection. Meditation deepens wisdom.',
+  },
+  Venus:{
+    1:'Attractive, charming, and artistic. Popular socially. Fond of beauty and comfort. Success in arts, entertainment, or luxury goods. Harmonious personality.',
+    2:'Wealth through beauty, art, or luxury. Sweet and attractive speech. Family life is harmonious. Financial prosperity. Jewelry and fine possessions.',
+    3:'Creative and artistic communication. Success in music, writing, or arts. Short journeys for pleasure. Siblings are artistic and social.',
+    4:'Comfortable and beautiful home. Mother is charming. Vehicles and conveniences. Success in real estate or interior design. Peace in domestic life.',
+    5:'Romantic and creative intelligence. Love affairs are important in life. Success in arts and entertainment. Children are beautiful. Speculation with care.',
+    6:'Health through beauty and wellness industry. Success in fashion or hospitality. Overcomes enemies through charm. Love interests may have complications.',
+    7:'Excellent for marriage — spouse is beautiful, cultured, and loving. Strong partnership. Business in beauty, art, or luxury. Love life is fulfilling.',
+    8:'Hidden romantic affairs. Inheritance through spouse. Interest in tantra or mystical arts. Longevity through balanced lifestyle. Occult knowledge.',
+    9:'Foreign travel for pleasure or art. Father appreciates beauty. Dharmic romance. Higher education in arts. Good fortune through partnerships.',
+    10:'Career in arts, entertainment, fashion, beauty, or luxury industry. Public recognition for talent. Creative work brings fame. Social influence.',
+    11:'Excellent income through art, beauty, or partnerships. Large social circle. Elder sibling is artistic. Romantic gains. Financial comfort grows.',
+    12:'Foreign romantic connections. Expenses through luxury or pleasure. Spiritual arts — music, dance as devotion. Hospital or ashram beauty work.',
+  },
+  Saturn:{
+    1:'Serious, disciplined, and patient. Life improves greatly after age 35. Hard-working but slow to show results. Longevity is good. Delays are temporary.',
+    2:'Careful with money — savings are strong. Speech is deliberate and sometimes pessimistic. Family responsibilities are heavy. Wealth builds through patience.',
+    3:'Hard-working in communications. Siblings may have challenges. Slow but steady progress in short journeys and ventures. Discipline in skills.',
+    4:'Property gains through hard work but with delays. Mother may have health concerns. Domestic life requires patience. Old age brings comfort.',
+    5:'Few children or delayed parenthood. Education requires discipline. Intelligence is deep but slow to show. Spiritual practices in solitude.',
+    6:'Excellent placement — Saturn destroys enemies and disease through persistence. Service industries, labor, and social work. Strong and disciplined health.',
+    7:'Marriage is delayed or brings responsibilities. Spouse is older or serious. Business partnerships are stable but slow. Long-lasting relationships.',
+    8:'Long life but with chronic health concerns. Delayed inheritance. Research into ancient knowledge. Karma is a strong theme. Discipline overcomes all.',
+    9:'Father has a serious or disciplined nature. Religion is practiced with austerity. Higher education through effort. Late-blooming fortune.',
+    10:'Excellent for career in government, administration, law, or engineering. Rises slowly but achieves lasting authority. Career after 35 is strongest.',
+    11:'Income grows steadily over time. Elder sibling has responsibilities. Large but stable social network. Financial gains are slow but certain.',
+    12:'Foreign residence or isolated spiritual practice. Expenses are heavy but karma is cleared. Ashram, prison, or hospital connections. Liberation through discipline.',
+  },
+  Rahu:{
+    1:'Unconventional personality. Foreign or unusual appearance. Ambitious beyond normal limits. Life path is unique and karmic. Strong worldly desires.',
+    2:'Unusual speech patterns. Financial gains through foreign sources or unconventional means. Family has karmic complexity. Materialistic tendencies.',
+    3:'Courage to go against conventions. Unusual siblings or neighbors. Success in foreign communication or media. Adventurous short journeys.',
+    4:'Unsettled home environment. Foreign residence possible. Real estate gains through unconventional means. Mother may have foreign or unusual background.',
+    5:'Unusual intelligence. Speculation and gambling risks. Children may be adopted or have karmic significance. Interest in foreign education.',
+    6:'Destroys enemies through unconventional means. Success in foreign countries. Health through alternative medicine. Competitive in unusual fields.',
+    7:'Foreign or unconventional spouse. International partnerships. Business with foreigners. Karmic relationships that transform both parties.',
+    8:'Deep interest in the occult and hidden knowledge. Longevity but with mysterious ailments. Sudden gains through inheritance. Transformation is life theme.',
+    9:'Unconventional religious views. Guru is foreign or unusual. Foreign travel for spiritual purposes. Karmic dharma lessons.',
+    10:'Career in foreign lands or unconventional fields. Ambition is extraordinary. Technology, foreign trade, or research suit well. Sudden rise possible.',
+    11:'Gains from foreign sources. Large but unusual social network. Unconventional elder sibling. Wishes fulfilled through unusual means.',
+    12:'Foreign residence and journeys. Spiritual liberation through unconventional paths. Expenses in foreign lands. Dreams and visions are intense.',
+  },
+  Ketu:{
+    1:'Detached, spiritual, and intuitive. Past-life spiritual merit is strong. Mysterious personality. Health concerns in childhood. Spiritual path is the highest calling.',
+    2:'Detachment from material wealth. Speech has a spiritual quality. Past-life family karma. Losses and gains alternate. Spiritual knowledge in the family.',
+    3:'Courage from past-life experience. Detachment from siblings. Short journeys for spiritual purposes. Communication has depth beyond words.',
+    4:'Detachment from homeland. Mother has spiritual qualities. Property matters have karma. Peace is found in inner solitude not outer comfort.',
+    5:'Past-life intelligence shines through. Detachment from children or creative pursuits. Spiritual practices in past life bear fruit now. Intuition is strong.',
+    6:'Excellent — Ketu destroys enemies and disease through karma. Health recovered through spiritual practice. Service is dharmic. Competition fades naturally.',
+    7:'Karmic marriage. Spouse may be detached or spiritual. Partnerships have spiritual significance. Dissolution of partnerships is possible.',
+    8:'Deep interest in moksha and liberation. Long life with spiritual health. Occult knowledge from past lives. Transformation is the life purpose.',
+    9:'Spiritual guru in a past life. Deep philosophical understanding. Dharma is lived naturally. Father has spiritual qualities. Moksha-oriented life.',
+    10:'Career in spiritual, occult, or healing fields. Detachment from worldly career. Past-life professional karma shapes current profession.',
+    11:'Detachment from gains and social circles. Income through spiritual or occult means. Elder sibling has karmic significance. Desires are few.',
+    12:'Excellent — spiritual liberation is the destination. Moksha is within reach. Foreign spiritual journeys. Meditation and samadhi are accessible.',
+  },
+};
+
+function calcKundali(){
+  const dateStr=document.getElementById('k-date').value;
+  const timeStr=document.getElementById('k-time').value;
+  const tz=parseFloat(document.getElementById('k-tz').value)||5.75;
+  const lat=parseFloat(document.getElementById('k-lat').value)||27.7172;
+  const lon=parseFloat(document.getElementById('k-lon').value)||85.3240;
+  const name=document.getElementById('k-name').value||'Native';
+  const place=document.getElementById('k-place').value||'—';
+  if(!dateStr)return;
+
+  const[y,m,d]=dateStr.split('-').map(Number);
+  const[hr,mn]=timeStr.split(':').map(Number);
+  const utcH=hr+mn/60-tz;
+  const jd=toJD(y,m,d,Math.floor(utcH),Math.round((utcH%1)*60));
+
+  const planets={
+    Sun:    sidLon(sunLon(jd),jd),
+    Moon:   sidLon(moonLon(jd),jd),
+    Mars:   sidLon(planetLon(jd,'Mars'),jd),
+    Mercury:sidLon(planetLon(jd,'Mercury'),jd),
+    Jupiter:sidLon(planetLon(jd,'Jupiter'),jd),
+    Venus:  sidLon(planetLon(jd,'Venus'),jd),
+    Saturn: sidLon(planetLon(jd,'Saturn'),jd),
+    Rahu:   sidLon(planetLon(jd,'Rahu'),jd),
+    Ketu:   sidLon(planetLon(jd,'Ketu'),jd),
+  };
+
+  const lagnaS=sidLon(calcLagna(jd,lat,lon),jd);
+  const lagnaRashi=lonToRashi(lagnaS);
+  const bs=jdToBs(jd);
+  const bsStr=`${bs.year} ${BS_MONTH_NAMES[bs.month-1]} ${bs.day}`;
+  const nakMoon=lonToNakshatra(planets.Moon);
+
+  // Build planet table
+  const PDEV={Sun:'सूर्य',Moon:'चन्द्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'गुरु',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु'};
+  const pRows=Object.entries(planets).map(([p,lon])=>{
+    const rashi=lonToRashi(lon);
+    const house=((rashi-lagnaRashi+12)%12)+1;
+    const nak=lonToNakshatra(lon);
+    const dig=dignity(p,rashi);
+    const digColor=dig.includes('⬆')?'#50D040':dig.includes('⬇')?'#FF5050':dig.includes('🏠')?'#FFD060':'';
+    return`<tr>
+      <td><span class="dev">${PDEV[p]}</span></td>
+      <td>${p}</td>
+      <td style="color:var(--gold)">${RASHIS[rashi]}<br/><span style="font-size:10px;color:var(--muted)">${RASHI_EN[rashi]}</span></td>
+      <td style="color:var(--amber);font-weight:700">H${house}</td>
+      <td style="font-size:10px;color:var(--muted)">${NAKSHATRAS[nak][1]}<br/>${NAKSHATRAS[nak][2]}</td>
+      <td style="font-size:10px;color:${digColor||'var(--muted)'}">${dig||'—'}</td>
+      <td style="font-size:10px;color:var(--muted)">${lon.toFixed(1)}°</td>
+    </tr>`;
+  }).join('');
+
+  // Generate reading
+  const reading=generateReading(planets,lagnaRashi,jd,name);
+
+  document.getElementById('kundali-result').innerHTML=`
+    <!-- Header -->
+    <div style="text-align:center;background:var(--bg2);border:1px solid var(--gold2);border-radius:6px;padding:12px;margin-bottom:14px">
+      <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:18px;color:var(--gold)">${name}</div>
+      <div style="font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;margin-top:3px">${dateStr} · ${timeStr} · ${place}</div>
+      <div style="font-size:10px;color:var(--muted);font-family:'EB Garamond',serif">BS: ${bsStr} · Tz: UTC+${tz}</div>
+      <div style="margin-top:6px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font-size:11px">
+        <span>🔺 <strong style="color:var(--gold)">लग्न:</strong> ${RASHIS[lagnaRashi]} (${RASHI_EN[lagnaRashi]})</span>
+        <span>☽ <strong style="color:var(--gold)">चन्द्र नक्षत्र:</strong> ${NAKSHATRAS[nakMoon][0]} (${NAKSHATRAS[nakMoon][1]})</span>
+        <span>☽ <strong style="color:var(--gold)">राशि:</strong> ${RASHIS[lonToRashi(planets.Moon)]} (${RASHI_EN[lonToRashi(planets.Moon)]})</span>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">उत्तर भारतीय कुण्डली — North Indian Chart</div>
+      <canvas id="kundali-canvas" width="300" height="300" style="border-radius:4px"></canvas>
+    </div>
+
+    <!-- Planet Table -->
+    <div style="margin-bottom:16px">
+      <div class="section-title">ग्रह स्थिति — Planetary Positions</div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr style="background:var(--bg2)">
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">ग्रह</th>
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">Graha</th>
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">राशि</th>
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">House</th>
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">Nakshatra</th>
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">Dignity</th>
+            <th style="padding:6px 8px;color:var(--gold2);font-size:9px;letter-spacing:1px;text-align:left">Long.</th>
+          </tr></thead>
+          <tbody style="font-family:'EB Garamond',serif">${pRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Full Reading -->
+    ${reading}`;
+
+  setTimeout(()=>drawKundali(planets,lagnaRashi),50);
+}
+
+// ── Generate full kundali reading ──
+function generateReading(planets,lagnaRashi,jd,name){
+  const PDEV={Sun:'सूर्य',Moon:'चन्द्र',Mars:'मंगल',Mercury:'बुध',Jupiter:'गुरु',Venus:'शुक्र',Saturn:'शनि',Rahu:'राहु',Ketu:'केतु'};
+  const PCOLOR={Sun:'#FFA030',Moon:'#C0C8FF',Mars:'#FF5050',Mercury:'#50C870',Jupiter:'#FFD060',Venus:'#FF80C0',Saturn:'#A0A8B0',Rahu:'#8080C0',Ketu:'#C09060'};
+
+  let html=`<div style="margin-bottom:16px">
+    <div class="section-title">कुण्डली विवरण — Kundali Reading</div>`;
+
+  // 1. Lagna reading
+  const lagnaInfo=LAGNA_MEANINGS[lagnaRashi];
+  html+=`<div style="background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;padding:10px 12px;margin-bottom:10px">
+    <div style="font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">लग्न / Ascendant</div>
+    <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--gold);margin-bottom:4px">${lagnaInfo.n}</div>
+    <div style="font-family:'EB Garamond',serif;font-size:13px;line-height:1.65;color:var(--text)">${lagnaInfo.e}</div>
+  </div>`;
+
+  // 2. Planet in house readings
+  html+=`<div style="font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">ग्रह भाव फल — Planet in House Results</div>`;
+
+  Object.entries(planets).forEach(([p,lon])=>{
+    const rashi=lonToRashi(lon);
+    const house=((rashi-lagnaRashi+12)%12)+1;
+    const dig=dignity(p,rashi);
+    const digColor=dig.includes('⬆')?'#50D040':dig.includes('⬇')?'#FF5050':dig.includes('🏠')?'#FFD060':'var(--dim)';
+    const meaning=PH[p]?PH[p][house]:'Interpretation not available.';
+    html+=`<div style="border:1px solid var(--dim);border-left:3px solid ${PCOLOR[p]};border-radius:0 4px 4px 0;padding:8px 12px;margin-bottom:7px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap">
+        <span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:13px;color:${PCOLOR[p]}">${PDEV[p]}</span>
+        <span style="font-size:11px;color:var(--muted)">${p}</span>
+        <span style="font-size:10px;color:var(--amber)">House ${house}</span>
+        <span style="font-size:10px;color:var(--muted)">in ${RASHI_EN[rashi]}</span>
+        ${dig?`<span style="font-size:9px;color:${digColor};border:1px solid ${digColor};padding:1px 5px;border-radius:2px">${dig}</span>`:''}
+      </div>
+      <div style="font-family:'EB Garamond',serif;font-size:12px;line-height:1.6;color:var(--text)">${meaning}</div>
+    </div>`;
+  });
+
+  // 3. Special dignities highlight
+  const specials=Object.entries(planets).filter(([p,lon])=>dignity(p,lonToRashi(lon))!=='');
+  if(specials.length){
+    html+=`<div style="background:rgba(200,160,40,0.08);border:1px solid var(--dim);border-radius:4px;padding:10px 12px;margin-bottom:10px">
+      <div style="font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">विशेष बल — Special Dignities</div>`;
+    specials.forEach(([p,lon])=>{
+      const rashi=lonToRashi(lon);
+      const dig=dignity(p,rashi);
+      const col=dig.includes('⬆')?'#50D040':dig.includes('⬇')?'#FF5050':'#FFD060';
+      html+=`<div style="font-family:'EB Garamond',serif;font-size:12px;margin-bottom:4px;color:var(--text)">
+        <span style="color:${col};font-weight:700">${dig}</span> — ${p} in ${RASHI_EN[rashi]}
+        ${dig.includes('⬆')?': Planet gives very strong and auspicious results in this sign.':''}
+        ${dig.includes('⬇')?': Planet\'s results are weakened — remedies (upay) recommended.':''}
+        ${dig.includes('🏠')?': Planet in own sign gives stable, reliable results.':''}
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // 4. Key houses summary
+  const h1Planets=Object.entries(planets).filter(([p,l])=>((lonToRashi(l)-lagnaRashi+12)%12)+1===1);
+  const h7Planets=Object.entries(planets).filter(([p,l])=>((lonToRashi(l)-lagnaRashi+12)%12)+1===7);
+  const h10Planets=Object.entries(planets).filter(([p,l])=>((lonToRashi(l)-lagnaRashi+12)%12)+1===10);
+
+  html+=`<div style="background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px 12px;margin-bottom:10px">
+    <div style="font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">मुख्य भाव — Key Houses Summary</div>
+    <div style="font-family:'EB Garamond',serif;font-size:12px;line-height:1.8">
+      <div>🔺 <strong style="color:var(--gold)">Lagna (H1 — Self, Health, Personality):</strong> ${RASHI_EN[lagnaRashi]} ${h1Planets.length?'· Planets: '+h1Planets.map(([p])=>p).join(', '):'· No planets — pure lagna sign qualities dominate'}</div>
+      <div>💼 <strong style="color:var(--gold)">Karma Bhava (H10 — Career, Status):</strong> ${RASHI_EN[(lagnaRashi+9)%12]} ${h10Planets.length?'· Planets: '+h10Planets.map(([p])=>p).join(', '):'· Lord of H10 governs career'}</div>
+      <div>💑 <strong style="color:var(--gold)">Kalatra Bhava (H7 — Marriage, Partnership):</strong> ${RASHI_EN[(lagnaRashi+6)%12]} ${h7Planets.length?'· Planets: '+h7Planets.map(([p])=>p).join(', '):'· Spouse qualities from H7 lord'}</div>
+      <div>💰 <strong style="color:var(--gold)">Dhana Bhava (H2 — Wealth, Family):</strong> ${RASHI_EN[(lagnaRashi+1)%12]} · Accumulation of wealth</div>
+      <div>🙏 <strong style="color:var(--gold)">Dharma Bhava (H9 — Fortune, Spirituality):</strong> ${RASHI_EN[(lagnaRashi+8)%12]} · Luck and dharmic path</div>
+    </div>
+  </div>`;
+
+  html+=`<div style="font-size:10px;color:var(--dim);font-family:'EB Garamond',serif;font-style:italic;padding-top:8px;border-top:1px solid var(--dim)">
+    Source: Brihat Parashara Hora Shastra · Phaladeepika · Saravali. For full reading include divisional charts (Navamsha D9, Dashamsha D10) and Dasha period analysis.
+  </div></div>`;
+
+  return html;
+}
+
+// ── Draw North Indian Kundali Chart ──
+function drawKundali(planets,lagnaRashi){
+  const cv=document.getElementById('kundali-canvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=300,H=300,C=W/4;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#08041A');bg.addColorStop(1,'#040210');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // House positions in 4×4 grid
+  const housePos={1:[0,1],2:[0,2],3:[0,3],4:[1,3],5:[2,3],6:[3,3],7:[3,2],8:[3,1],9:[3,0],10:[2,0],11:[1,0],12:[0,0]};
+
+  // Build house → rashi and planets
+  const abbr={Sun:'Su',Moon:'Mo',Mars:'Ma',Mercury:'Bu',Jupiter:'Gu',Venus:'Sh',Saturn:'Sa',Rahu:'Ra',Ketu:'Ke'};
+  const PCOL={Sun:'#FFA030',Moon:'#C0C8FF',Mars:'#FF5050',Mercury:'#50D870',Jupiter:'#FFD060',Venus:'#FF80C0',Saturn:'#A0A8B0',Rahu:'#8080C0',Ketu:'#C09060'};
+  const housePlanets={},housePlanetColors={};
+  Object.entries(planets).forEach(([p,lon])=>{
+    const rashi=lonToRashi(lon);
+    const h=((rashi-lagnaRashi+12)%12)+1;
+    if(!housePlanets[h])housePlanets[h]=[];
+    housePlanets[h].push({a:abbr[p],c:PCOL[p]});
+  });
+
+  // Draw outer border
+  ctx.strokeStyle='#6A5028';ctx.lineWidth=2;
+  ctx.strokeRect(1,1,W-2,H-2);
+
+  // Draw grid lines
+  ctx.strokeStyle='#3A2818';ctx.lineWidth=1;
+  for(let i=1;i<4;i++){
+    ctx.beginPath();ctx.moveTo(i*C,0);ctx.lineTo(i*C,H);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,i*C);ctx.lineTo(W,i*C);ctx.stroke();
+  }
+
+  // Center block
+  ctx.fillStyle='#06031A';ctx.fillRect(C+1,C+1,C*2-2,C*2-2);
+  ctx.strokeStyle='#4A3820';ctx.lineWidth=1;
+  ctx.strokeRect(C,C,C*2,C*2);
+  // OM symbol in center
+  ctx.fillStyle='#3A2818';ctx.font='22px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('ॐ',W/2,H/2);
+
+  // Draw each house cell
+  Object.entries(housePos).forEach(([house,[row,col]])=>{
+    const h=parseInt(house);
+    const x=col*C+1,y=row*C+1,cw=C-2,ch=C-2;
+    const rashi=(lagnaRashi+h-1)%12;
+    const pl=housePlanets[h]||[];
+
+    // Lagna house highlight
+    if(h===1){
+      ctx.fillStyle='rgba(200,150,20,0.08)';
+      ctx.fillRect(x,y,cw,ch);
+      ctx.strokeStyle='#E8C040';ctx.lineWidth=1.5;
+      ctx.strokeRect(x,y,cw,ch);
+      ctx.lineWidth=1;
+    }
+
+    // Rashi number — large, top-center
+    ctx.fillStyle='#E8C040';ctx.font=`bold ${C*0.3}px 'Philosopher',serif`;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(`${rashi+1}`,x+cw/2,y+ch*0.38);
+
+    // Lagna marker
+    if(h===1){
+      ctx.fillStyle='#E8C040';ctx.font=`bold 8px 'Philosopher',serif`;
+      ctx.fillText('Lag',x+cw/2,y+ch*0.54);
+    }
+
+    // Planet abbreviations — stacked
+    if(pl.length>0){
+      const startY=h===1?y+ch*0.65:y+ch*0.52;
+      const lineH=10;
+      // Arrange in pairs
+      const pairs=[];
+      for(let i=0;i<pl.length;i+=2){
+        if(pl[i+1])pairs.push(pl[i].a+' '+pl[i+1].a);
+        else pairs.push(pl[i].a);
+      }
+      pairs.forEach((line,i)=>{
+        ctx.fillStyle='#F0A030';ctx.font=`bold 9px 'Philosopher',serif`;
+        ctx.fillText(line,x+cw/2,startY+i*lineH);
+      });
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// DASHA CALCULATOR
+// Source: Brihat Parashara Hora Shastra Ch.46
+// ═══════════════════════════════════════════════
+function calcDasha(){
+  const dateStr=document.getElementById('d-date').value;
+  const timeStr=document.getElementById('d-time').value;
+  const tz=parseFloat(document.getElementById('d-tz').value);
+  const yearsAhead=parseInt(document.getElementById('d-years').value);
+  if(!dateStr)return;
+
+  const[y,m,d]=dateStr.split('-').map(Number);
+  const[hr,mn]=timeStr.split(':').map(Number);
+  const utcH=hr+mn/60-tz;
+  const jd=toJD(y,m,d,Math.floor(utcH),Math.round((utcH%1)*60));
+
+  const moonSid=sidLon(moonLon(jd),jd);
+  const nakIdx=lonToNakshatra(moonSid);
+  const nakLord=DASHA_NAKSATRA_LORD[nakIdx];
+
+  // Position within nakshatra (0 to 1)
+  const nakSpan=360/27;
+  const nakStart=nakIdx*nakSpan;
+  const posInNak=(moonSid-nakStart)/nakSpan; // 0=start, 1=end
+  const balance=1-posInNak; // fraction of first dasha remaining
+
+  // Find starting dasha index
+  const startIdx=DASHA_ORDER.indexOf(nakLord);
+  
+  // Build dasha timeline
+  const dashas=[];
+  let cumDays=0;
+  const DAYS_PER_YEAR=365.25;
+  
+  // First dasha (partial)
+  const firstYrs=DASHA_YEARS[startIdx]*balance;
+  dashas.push({planet:DASHA_ORDER[startIdx],years:firstYrs,startJD:jd,endJD:jd+firstYrs*DAYS_PER_YEAR});
+  cumDays+=firstYrs*DAYS_PER_YEAR;
+
+  // Subsequent full dashas until yearsAhead
+  let idx=(startIdx+1)%9;
+  while(cumDays<yearsAhead*DAYS_PER_YEAR){
+    const yrs=DASHA_YEARS[idx];
+    const startJD=jd+cumDays;
+    const endJD=startJD+yrs*DAYS_PER_YEAR;
+    dashas.push({planet:DASHA_ORDER[idx],years:yrs,startJD,endJD});
+    cumDays+=yrs*DAYS_PER_YEAR;
+    idx=(idx+1)%9;
+  }
+
+  const nowJD=toJD(...new Date().toISOString().slice(0,10).split('-').map(Number));
+
+  let html=`
+    <div style="background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px 12px;margin-bottom:12px">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Birth Nakshatra</div>
+      <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:15px;color:var(--gold)">${NAKSHATRAS[nakIdx][0]} (${NAKSHATRAS[nakIdx][1]})</div>
+      <div style="font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;margin-top:3px">Lord: ${nakLord} · Moon: ${moonSid.toFixed(2)}°</div>
+      <div style="font-size:11px;color:var(--muted);font-family:'EB Garamond',serif">First Dasha Balance: ${(balance*DASHA_YEARS[startIdx]).toFixed(2)} yrs of ${DASHA_YEARS[startIdx]} yrs</div>
+    </div>
+    <div style="font-size:9px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Mahadasha Timeline</div>`;
+
+  dashas.forEach((da,i)=>{
+    const isNow=nowJD>=da.startJD&&nowJD<da.endJD;
+    const isPast=da.endJD<nowJD;
+    const cls=isNow?'dasha-row active-maha':'dasha-row';
+    const color=DASHA_COLORS[da.planet]||'#E8C040';
+    const startStr=formatDate(da.startJD), endStr=formatDate(da.endJD);
+
+    html+=`<div class="${cls}" style="${isPast?'opacity:0.5':''}">
+      <div class="dasha-planet" style="color:${color}">${da.planet}</div>
+      <div class="dasha-period">${da.years.toFixed(1)} yrs</div>
+      <div class="dasha-dates">${startStr} → ${endStr}</div>
+      ${isNow?'<span class="dasha-badge">NOW</span>':''}
+    </div>`;
+
+    // Show antardasha for current maha
+    if(isNow){
+      html+=`<div style="margin:4px 0 8px 20px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Antardasha</div>`;
+      let aStart=da.startJD;
+      let aIdx=DASHA_ORDER.indexOf(da.planet);
+      const mahaYrs=da.years;
+      for(let j=0;j<9;j++){
+        const aP=DASHA_ORDER[(aIdx+j)%9];
+        const aYrs=mahaYrs*DASHA_YEARS[(aIdx+j)%9]/120;
+        const aEnd=aStart+aYrs*DAYS_PER_YEAR;
+        const isAN=nowJD>=aStart&&nowJD<aEnd;
+        const aC=DASHA_COLORS[aP]||'#E8C040';
+        html+=`<div class="dasha-row ${isAN?'active-antar':''}" style="margin-left:20px;padding:4px 8px;${aEnd<nowJD?'opacity:0.4':''}">
+          <span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:12px;color:${aC};width:70px;display:inline-block">${aP}</span>
+          <span style="font-family:'EB Garamond',serif;font-size:10px;color:var(--muted);font-style:italic;flex:1">${aYrs.toFixed(2)} yrs</span>
+          <span style="font-size:10px;color:var(--text)">${formatDate(aStart)} → ${formatDate(aEnd)}</span>
+          ${isAN?'<span class="dasha-badge" style="font-size:8px;background:var(--amber)">↑</span>':''}
+        </div>`;
+        aStart=aEnd;
+      }
+    }
+  });
+
+  document.getElementById('dasha-result').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// BS / AD CONVERTERS
+// ═══════════════════════════════════════════════
+function convertAdToBs(){
+  const v=document.getElementById('c-ad').value;
+  if(!v)return;
+  const[y,m,d]=v.split('-').map(Number);
+  const jd=toJD(y,m,d);
+  const bs=jdToBs(jd);
+  const bsStr=`${bs.year} ${BS_MONTH_NAMES[bs.month-1]} ${bs.day}`;
+  document.getElementById('c-ad-result').innerHTML=`
+    <div class="convert-result">
+      <div class="big">${bsStr}</div>
+      <div class="small">विक्रम सम्वत् ${bs.year}${bs.approx?' (approximate — outside lookup range)':''}</div>
+    </div>`;
+}
+
+function convertBsToAd(){
+  const bsY=parseInt(document.getElementById('c-bs-y').value);
+  const bsM=parseInt(document.getElementById('c-bs-m').value);
+  const bsD=parseInt(document.getElementById('c-bs-d').value);
+  const jd=bsToJD(bsY,bsM,bsD);
+  const ad=fromJD(jd);
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('c-bs-result').innerHTML=`
+    <div class="convert-result">
+      <div class="big">${ad.day} ${months[ad.month-1]} ${ad.year} AD</div>
+      <div class="small">${ad.year}-${String(ad.month).padStart(2,'0')}-${String(ad.day).padStart(2,'0')}</div>
+      ${!BAISAKH1[bsY]?'<div style="color:#806040;font-size:10px;margin-top:6px">Note: Outside lookup table range — approximate</div>':''}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// REFERENCE TABLES
+// ═══════════════════════════════════════════════
+function buildRefTables(){
+  // Nakshatra table
+  let nt='';
+  NAKSHATRAS.forEach((n,i)=>{
+    nt+=`<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td class="dev">${n[0]}</td>
+      <td>${n[1]}</td>
+      <td style="color:${DASHA_COLORS[n[2]]||'#E8C040'}">${n[2]}</td>
+      <td style="font-size:10px;color:var(--muted)">${n[3]}</td>
+      <td style="font-size:10px;color:var(--muted)">${n[4]}</td>
+    </tr>`;
+  });
+  document.getElementById('nakshatra-table').innerHTML=nt;
+
+  // Rashi table
+  let rt='';
+  RASHIS.forEach((r,i)=>{
+    rt+=`<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td class="dev">${r}</td>
+      <td>${RASHI_EN[i]}</td>
+      <td>${RASHI_LORD[i]}</td>
+      <td>${RASHI_ELEM[i]}</td>
+      <td>${RASHI_QUAL[i]}</td>
+    </tr>`;
+  });
+  document.getElementById('rashi-table').innerHTML=rt;
+
+  // Graha table
+  let gt='';
+  GRAHAS.forEach(g=>{
+    gt+=`<tr>
+      <td class="dev">${g[0]}</td>
+      <td>${g[1]}</td>
+      <td style="font-weight:700;color:${DASHA_COLORS[g[1]]||'#E8C040'}">${g[2]}</td>
+      <td style="color:var(--gold)">${g[3]} yrs</td>
+      <td style="font-size:11px">${g[4]}</td>
+      <td style="font-size:11px">${g[5]}</td>
+    </tr>`;
+  });
+  document.getElementById('graha-table').innerHTML=gt;
+}
+
+// ═══════════════════════════════════════════════
+// GEOCODING — OpenStreetMap Nominatim (free, no key)
+// Docs: https://nominatim.openstreetmap.org/
+// Timezone estimated from longitude / 15, rounded to nearest 0.25
+// ═══════════════════════════════════════════════
+
+// Estimate UTC offset from longitude
+// e.g. Kathmandu 85.3° → 85.3/15 = 5.69 → rounds to 5.75 ✓
+// India 78° → 78/15 = 5.2 → rounds to 5.25 (actual 5.5 — close)
+// For Nepal/India region this is accurate. User can override.
+function tzFromLon(lon){
+  const raw=lon/15;
+  return Math.round(raw*4)/4; // round to nearest 0.25
+}
+
+// Format UTC offset nicely: 5.75 → "UTC+5:45"
+function tzLabel(offset){
+  const sign=offset>=0?'+':'-';
+  const abs=Math.abs(offset);
+  const h=Math.floor(abs);
+  const m=Math.round((abs-h)*60);
+  return`UTC${sign}${h}:${String(m).padStart(2,'0')}`;
+}
+
+async function geocodePlace(place){
+  const url=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=3&addressdetails=1`;
+  const res=await fetch(url,{headers:{'Accept-Language':'en','User-Agent':'JyotishDashboard/1.0'}});
+  if(!res.ok)throw new Error('Network error');
+  const data=await res.json();
+  if(!data.length)throw new Error('Place not found');
+  return data[0]; // best match
+}
+
+// ── Panchang location lookup ──
+async function lookupLocationP(){
+  const place=document.getElementById('p-place').value.trim();
+  if(!place){document.getElementById('p-location-status').textContent='Please enter a place name.';return;}
+  const btn=document.getElementById('p-lookup-btn');
+  const status=document.getElementById('p-location-status');
+  btn.textContent='⏳'; btn.disabled=true; status.textContent='Looking up...';
+  try{
+    const r=await geocodePlace(place);
+    const lat=parseFloat(r.lat), lon=parseFloat(r.lon);
+    const tz=tzFromLon(lon);
+    document.getElementById('p-lat').value=lat.toFixed(4);
+    document.getElementById('p-lon').value=lon.toFixed(4);
+    document.getElementById('p-tz').value=tz;
+    const label=r.display_name.split(',').slice(0,3).join(', ');
+    status.innerHTML=`<span style="color:var(--green)">✓</span> ${label} · ${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E · ${tzLabel(tz)}`;
+  }catch(e){
+    status.innerHTML=`<span style="color:var(--red)">✗</span> ${e.message} — try a more specific name`;
+  }
+  btn.textContent='🔍 Lookup'; btn.disabled=false;
+}
+function clearLocationP(){document.getElementById('p-location-status').textContent='';}
+
+// ── Kundali location lookup ──
+async function lookupLocationK(){
+  const place=document.getElementById('k-place').value.trim();
+  if(!place){document.getElementById('k-location-status').textContent='Please enter a birth place.';return;}
+  const btn=document.getElementById('k-lookup-btn');
+  const status=document.getElementById('k-location-status');
+  btn.textContent='⏳'; btn.disabled=true; status.textContent='Looking up...';
+  try{
+    const r=await geocodePlace(place);
+    const lat=parseFloat(r.lat), lon=parseFloat(r.lon);
+    const tz=tzFromLon(lon);
+    // Store in hidden fields
+    document.getElementById('k-lat').value=lat.toFixed(4);
+    document.getElementById('k-lon').value=lon.toFixed(4);
+    document.getElementById('k-tz').value=tz;
+    document.getElementById('k-tz-override').value=tz;
+    // Show details
+    document.getElementById('k-lat-show').textContent=lat.toFixed(4)+'° N';
+    document.getElementById('k-lon-show').textContent=lon.toFixed(4)+'° E';
+    document.getElementById('k-tz-show').textContent=tzLabel(tz);
+    document.getElementById('k-location-details').style.display='block';
+    const label=r.display_name.split(',').slice(0,3).join(', ');
+    status.innerHTML=`<span style="color:var(--green)">✓</span> ${label}`;
+  }catch(e){
+    status.innerHTML=`<span style="color:var(--red)">✗</span> ${e.message} — try a different spelling`;
+  }
+  btn.textContent='🔍 Lookup'; btn.disabled=false;
+}
+function clearLocationK(){
+  document.getElementById('k-location-status').textContent='';
+  document.getElementById('k-location-details').style.display='none';
+}
+function applyTzOverride(){
+  const v=parseFloat(document.getElementById('k-tz-override').value);
+  if(isNaN(v))return;
+  document.getElementById('k-tz').value=v;
+  document.getElementById('k-tz-show').textContent=tzLabel(v)+' (manual)';
+  document.getElementById('k-tz-manual').style.display='none';
+}
+function showTab(id, el){
+  try{
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    const panel=document.getElementById('panel-'+id);
+    if(panel)panel.classList.add('active');
+    if(el)el.classList.add('active');
+    if(id==='templates')setTimeout(()=>{try{if(window.tmplInit)window.tmplInit();}catch(e){console.error('Template init error:',e);}},100);
+  }catch(e){console.error('showTab error:',e);}
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // Set today as default dates
+  const today=new Date().toISOString().slice(0,10);
+  ['p-date','k-date','d-date','c-ad'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value=today;
+  });
+  buildRefTables();
+  // Enter key triggers lookup
+  document.getElementById('p-place').addEventListener('keydown',e=>{if(e.key==='Enter')lookupLocationP();});
+  document.getElementById('k-place').addEventListener('keydown',e=>{if(e.key==='Enter')lookupLocationK();});
+  // Auto-calculate today's panchang
+  setTimeout(calcPanchang, 300);
+});
+</script>
+
+<!-- ══════════════════ TEMPLATES ══════════════════ -->
+<div id="panel-templates" class="panel">
+  <div class="section-title">पोस्ट टेम्पलेट — Post Template Studio</div>
+
+  <!-- Channel selector -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-gold" id="ch-vidhi" onclick="tmplSetChannel('vidhi')" style="font-size:11px;padding:6px 14px">विधि चक्र</button>
+    <button class="btn btn-outline" id="ch-vedic" onclick="tmplSetChannel('vedic')" style="font-size:11px;padding:6px 14px">वैदिक ज्ञान केन्द्र</button>
+  </div>
+
+  <!-- Template tabs (scrollable) -->
+  <div id="tmpl-tabs" style="display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;scrollbar-width:none"></div>
+
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:center">
+    <!-- Inputs -->
+    <div style="flex:1 1 240px;max-width:300px">
+      <div id="tmpl-cat-label" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-family:'Tiro Devanagari Sanskrit',serif"></div>
+
+      <!-- Vidhi Chakra fields -->
+      <div id="tmpl-fields-vidhi">
+        <div class="form-group" style="margin-bottom:10px"><label>Title</label><input type="text" id="tmpl-title" placeholder="Optional heading..." oninput="tmplUpdate()"/></div>
+        <div class="form-group" style="margin-bottom:10px"><label>Content</label><textarea id="tmpl-body" rows="6" placeholder="Write your content here..." oninput="tmplUpdate()" style="resize:vertical"></textarea></div>
+        <div class="form-group" style="margin-bottom:10px"><label>Hashtags</label><input type="text" id="tmpl-tags" placeholder="" oninput="tmplUpdate()"/></div>
+      </div>
+
+      <!-- Vedic Gyan Kendra fields -->
+      <div id="tmpl-fields-vedic" style="display:none">
+        <div class="form-group" style="margin-bottom:10px"><label>Title / Source</label><input type="text" id="tmplv-title" placeholder="e.g. Bhagavad Gita 2.47" oninput="tmplUpdate()"/></div>
+        <div class="form-group" style="margin-bottom:10px">
+          <label style="color:#FFD060">Sanskrit / Shloka</label>
+          <textarea id="tmplv-shloka" rows="3" placeholder="संस्कृत श्लोक..." oninput="tmplUpdate()" style="resize:vertical;color:#FFE090;font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:10px">
+          <label style="color:#A0C0FF">English Meaning</label>
+          <textarea id="tmplv-english" rows="3" placeholder="English translation..." oninput="tmplUpdate()" style="resize:vertical;color:#E8F0FF;font-style:italic;font-family:'EB Garamond',serif;font-size:14px"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:10px"><label>Hashtags</label><input type="text" id="tmplv-tags" placeholder="" oninput="tmplUpdate()"/></div>
+      </div>
+
+      <!-- Drag blocks reset -->
+      <button class="btn btn-outline" onclick="tmplResetPos()" style="width:100%;margin-bottom:10px;font-size:11px">↺ Reset block positions</button>
+      <div style="font-size:10px;color:var(--dim);line-height:1.7">
+        ✦ Drag <span style="color:var(--gold)">⠿</span> handles to reposition blocks<br/>
+        📱 iOS: Save → long-press image → Save to Photos<br/>
+        🤖 Android: Save → Download PNG
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div style="font-size:9px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">Preview — drag blocks to position</div>
+      <div id="tmpl-wrap" style="position:relative;width:300px;height:533px;border-radius:8px;overflow:hidden">
+        <canvas id="tmpl-bg" width="300" height="533" style="position:absolute;top:0;left:0;display:block"></canvas>
+      </div>
+      <button id="tmpl-save-btn" onclick="tmplSave()" style="margin-top:10px;width:300px;padding:12px 0;border:none;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:14px;font-weight:700;letter-spacing:1px;color:#1A0800;transition:all 0.2s">⬇ Save Image</button>
+      <div style="font-size:9px;color:var(--dim);margin-top:5px;text-align:center">1080 × 1920 px full resolution</div>
+    </div>
+  </div>
+
+  <!-- Save modal -->
+  <div id="tmpl-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.94);flex-direction:column;align-items:center;justify-content:center;padding:16px">
+    <img id="tmpl-modal-img" src="" style="max-width:260px;max-height:72vh;border-radius:8px;display:block"/>
+    <div id="tmpl-modal-msg" style="color:var(--gold);font-family:'EB Garamond',serif;font-size:14px;margin-top:14px;text-align:center;line-height:1.7"></div>
+    <button id="tmpl-modal-dl" onclick="tmplDL()" style="display:none;margin-top:12px;padding:10px 28px;border:none;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:13px;font-weight:700;color:#1A0800"></button>
+    <button onclick="document.getElementById('tmpl-modal').style.display='none'" style="margin-top:10px;padding:8px 24px;background:transparent;border:1px solid #503018;color:var(--muted);border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:12px">✕ Close</button>
+  </div>
+</div>
+
+<!-- ══════════════════ STUDY ══════════════════ -->
+<div id="panel-study" class="panel">
+  <div class="section-title">📚 अध्ययन — Study Materials</div>
+  <div class="note-box">Upload Jyotish books, PDFs, or study notes here. They stay available as long as this tab is open. Your dad can reference them while reading a kundali.</div>
+
+  <!-- Upload area -->
+  <div id="study-upload-area" style="border:2px dashed var(--dim);border-radius:6px;padding:28px 16px;text-align:center;margin-bottom:16px;cursor:pointer;transition:border-color 0.2s" onclick="document.getElementById('study-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--gold)'" ondragleave="this.style.borderColor='var(--dim)'" ondrop="studyHandleDrop(event)">
+    <div style="font-size:28px;margin-bottom:8px">📖</div>
+    <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--gold);margin-bottom:4px">Upload Study Book</div>
+    <div style="font-size:11px;color:var(--muted);font-family:'EB Garamond',serif">Drag & drop PDF here, or tap to browse<br/>Supports PDF, images, and text files</div>
+    <input type="file" id="study-file-input" style="display:none" accept=".pdf,.png,.jpg,.jpeg,.txt,.md" multiple onchange="studyLoadFiles(this.files)"/>
+  </div>
+
+  <!-- Uploaded books list -->
+  <div id="study-books" style="margin-bottom:16px"></div>
+
+  <!-- Viewer area -->
+  <div id="study-viewer" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div id="study-book-title" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--gold)"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-outline" onclick="studyZoom(-0.2)" style="padding:4px 10px;font-size:12px">−</button>
+        <span id="study-zoom-label" style="font-size:11px;color:var(--muted);min-width:40px;text-align:center">100%</span>
+        <button class="btn btn-outline" onclick="studyZoom(0.2)" style="padding:4px 10px;font-size:12px">+</button>
+        <button class="btn btn-outline" onclick="studyClose()" style="padding:4px 10px;font-size:11px">✕ Close</button>
+      </div>
+    </div>
+    <div id="study-content" style="background:var(--bg2);border:1px solid var(--dim);border-radius:6px;padding:8px;overflow:auto;max-height:70vh"></div>
+  </div>
+
+  <!-- Quick notes -->
+  <div style="margin-top:16px">
+    <div class="section-title">✏️ अध्ययन नोट्स — Study Notes</div>
+    <textarea id="study-notes" placeholder="Write your study notes here... (auto-saved while you type)" rows="8" style="width:100%;background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:10px;color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:13px;line-height:1.7;outline:none;resize:vertical"></textarea>
+    <div id="study-notes-status" style="font-size:9px;color:var(--dim);margin-top:4px;text-align:right">Notes are saved locally in this browser session</div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// TEMPLATES
-// ═══════════════════════════════════════════════
-const T={
-  vastu:      {label:"Vastu",      cat:"वास्तु शास्त्र",  bgS:"#2D1008",bgE:"#0E0200",acc:"#C4572A",gold:"#E8A020",text:"#F5E0B0",sub:"#906040",sym:"◈",tag:"ज्ञान • दिशा • शांति",    htags:"#VastuShastra #VastuTips #GharKiDisha #VidhiChakra",   cg:"radial-gradient(ellipse at 30% 20%,#2D1008,#1C0800 60%,#0E0200)",mandala:"wheel"},
-  jyotish:    {label:"Jyotish",    cat:"ज्योतिष शास्त्र", bgS:"#0E0625",bgE:"#030310",acc:"#8B58D8",gold:"#FFD060",text:"#EAE0FF",sub:"#7060A0",sym:"✦",tag:"ग्रह • नक्षत्र • भाग्य", htags:"#Jyotish #RashiFal #Kundali #Astrology #VidhiChakra",   cg:"radial-gradient(ellipse at 70% 30%,#0E0625,#080818 60%,#030310)",mandala:"zodiac"},
-  rashifal:   {label:"Rashifal",   cat:"राशिफल",          bgS:"#08042A",bgE:"#020110",acc:"#6644CC",gold:"#C8A8FF",text:"#F0ECFF",sub:"#6858A8",sym:"☽",tag:"राशि • ग्रह • भविष्य",   htags:"#Rashifal #RashiPhal #Horoscope #Jyotish #VidhiChakra",cg:"radial-gradient(ellipse at 60% 25%,#08042A,#040218 60%,#020110)",mandala:"zodiac"},
-  numerology: {label:"Numerology", cat:"अंक ज्योतिष",    bgS:"#0F1800",bgE:"#030800",acc:"#5A9A20",gold:"#C8A020",text:"#E8F0D0",sub:"#608040",sym:"∞",tag:"अंक • भाग्य • जीवन",   htags:"#Numerology #AnkJyotish #LuckyNumber #VidhiChakra",    cg:"radial-gradient(ellipse at 40% 60%,#0F1800,#080F00 60%,#030800)",mandala:"wheel"},
-  mantra:     {label:"Mantra",     cat:"मन्त्र",           bgS:"#1A0600",bgE:"#060100",acc:"#CC5500",gold:"#FFB040",text:"#FFF0D8",sub:"#A06030",sym:"ॐ",tag:"मंत्र • शक्ति • जागृति",htags:"#Mantra #SanatanDharma #VedicMantra #VidhiChakra",      cg:"radial-gradient(ellipse at 40% 40%,#1A0600,#0E0300 60%,#060100)",mandala:"lotus"},
-  panchang:   {label:"Panchang",   cat:"पञ्चाङ्ग",         bgS:"#180C00",bgE:"#050200",acc:"#C08020",gold:"#FFD878",text:"#FFF8E8",sub:"#988050",sym:"✾",tag:"तिथि • नक्षत्र • योग",  htags:"#Panchang #Tithi #Nakshatra #VedicCalendar #VidhiChakra",cg:"radial-gradient(ellipse at 50% 20%,#180C00,#0E0600 60%,#050200)",mandala:"sun"},
-  yantra:     {label:"Yantra",     cat:"यन्त्र",            bgS:"#041418",bgE:"#010508",acc:"#207080",gold:"#50D0C0",text:"#D8F8F8",sub:"#407868",sym:"△",tag:"यन्त्र • साधना • मोक्ष",htags:"#Yantra #SriYantra #SacredGeometry #VidhiChakra",      cg:"radial-gradient(ellipse at 30% 70%,#041418,#020A10 60%,#010508)",mandala:"yantra"},
-  quote:      {label:"Quote",      cat:"आजको विचार",      bgS:"#231000",bgE:"#080200",acc:"#A05020",gold:"#D4881E",text:"#F0E0C0",sub:"#806040",sym:"❋",tag:"ज्ञान • चेतना • धर्म",  htags:"#SanatanDharma #Wisdom #DailyWisdom #VidhiChakra",     cg:"radial-gradient(ellipse at 50% 40%,#231000,#180800 60%,#080200)",mandala:"wheel"},
-};
-let active="vastu";
-const DEFAULT_POS={header:0.06,title:0.32,body:0.47,footer:0.76};
-let pos={...DEFAULT_POS};
-let lastDataURL="";
+// Template + Study code — wrapped in try-catch so errors don't break other tabs
+try{
+(function(){
 
-// ═══════════════════════════════════════════════
-// CANVAS HELPERS
-// ═══════════════════════════════════════════════
-function hr(hex,a){
-  const h=hex.replace("#","");
-  return `rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
-}
+// ── Template data ──
+const VIDHI={
+  vastu:      {label:'Vastu',      cat:'वास्तु शास्त्र',  bgS:'#1E0A00',bgE:'#060100',acc:'#D4622A',gold:'#F0A830',text:'#FFF3D8',sub:'#B07840',sym:'◈',tag:'दिशा • संतुलन • समृद्धि',  htags:'#VastuShastra #VastuTips #GharKaDharma #VidhiChakra',   cg:'radial-gradient(ellipse at 35% 25%,#2A1000,#160600 60%,#060100)',   mandala:'vastu'},
+  jyotish:    {label:'Jyotish',    cat:'ज्योतिष शास्त्र', bgS:'#060220',bgE:'#010108',acc:'#7755DD',gold:'#E8C840',text:'#F8F4FF',sub:'#7868B0',sym:'✦',tag:'ग्रह • नक्षत्र • भाग्य',  htags:'#Jyotish #VedicAstrology #Kundali #GrahaDasha #VidhiChakra',    cg:'radial-gradient(ellipse at 65% 25%,#0A0430,#050218 60%,#010108)',   mandala:'jyotish'},
+  rashifal:   {label:'Rashifal',   cat:'राशिफल',          bgS:'#04021E',bgE:'#010010',acc:'#5533BB',gold:'#B898FF',text:'#EEEAFF',sub:'#5848A0',sym:'☽',tag:'राशि • ग्रह • भविष्य',    htags:'#Rashifal #DainikRashifal #Horoscope #Jyotish #VidhiChakra',    cg:'radial-gradient(ellipse at 55% 30%,#06031A,#030112 60%,#010010)',   mandala:'rashifal'},
+  numerology: {label:'Numerology', cat:'अंक ज्योतिष',    bgS:'#0A1400',bgE:'#020500',acc:'#4A8818',gold:'#B8980A',text:'#F0FFD8',sub:'#507030',sym:'∞',tag:'अंक • भाग्य • जीवन',     htags:'#Numerology #AnkJyotish #LuckyNumber #VidhiChakra',             cg:'radial-gradient(ellipse at 40% 60%,#0F1800,#080F00 60%,#020500)',   mandala:'wheel'},
+  mantra:     {label:'Mantra',     cat:'मन्त्र',           bgS:'#14021C',bgE:'#040008',acc:'#B83880',gold:'#FFA8E0',text:'#FFF0FA',sub:'#A05888',sym:'ॐ',tag:'मंत्र • शक्ति • जागृति',  htags:'#Mantra #SanatanDharma #VedicMantra #AdiParashakti #VidhiChakra',cg:'radial-gradient(ellipse at 40% 35%,#1A0420,#0C0214 60%,#040108)',   mandala:'lotus'},
+  panchang:   {label:'Panchang',   cat:'पञ्चाङ्ग',         bgS:'#180C00',bgE:'#050200',acc:'#C08020',gold:'#FFD878',text:'#FFF8E8',sub:'#988050',sym:'✾',tag:'तिथि • नक्षत्र • योग',    htags:'#Panchang #Tithi #Nakshatra #VedicCalendar #VidhiChakra',        cg:'radial-gradient(ellipse at 50% 20%,#180C00,#0E0600 60%,#050200)',   mandala:'sun'},
+  yantra:     {label:'Yantra',     cat:'यन्त्र',            bgS:'#041418',bgE:'#010508',acc:'#207080',gold:'#50D0C0',text:'#D8F8F8',sub:'#407868',sym:'△',tag:'यन्त्र • साधना • मोक्ष',  htags:'#Yantra #SriYantra #SacredGeometry #VidhiChakra',               cg:'radial-gradient(ellipse at 30% 70%,#041418,#020A10 60%,#010508)',   mandala:'yantra'},
+  quote:      {label:'Quote',      cat:'आजको विचार',      bgS:'#231000',bgE:'#080200',acc:'#A05020',gold:'#D4881E',text:'#F0E0C0',sub:'#806040',sym:'❋',tag:'ज्ञान • चेतना • धर्म',    htags:'#SanatanDharma #Wisdom #DailyWisdom #VidhiChakra',              cg:'radial-gradient(ellipse at 50% 40%,#231000,#180800 60%,#080200)',   mandala:'wheel'},
+};
+const VEDIC={
+  gita:      {label:'Gita',       cat:'भगवद्गीता',    bgS:'#1C0400',bgE:'#060100',acc:'#CC4400',gold:'#F09020',text:'#FFF8E8',sub:'#A06030',sym:'ॐ', tag:'कर्म • ज्ञान • भक्ति',     htags:'#BhagavadGita #GitaQuotes #SanatanDharma #VedicGyanKendra',  cg:'radial-gradient(ellipse at 40% 30%,#280800,#140300 60%,#060100)',mandala:'gita'},
+  upanishad: {label:'Upanishad',  cat:'उपनिषद्',      bgS:'#100C00',bgE:'#040300',acc:'#B08820',gold:'#E8C840',text:'#FFFFF0',sub:'#907040',sym:'ब्र',tag:'ब्रह्म • आत्मा • मोक्ष',   htags:'#Upanishad #VedicWisdom #Brahman #VedicGyanKendra',          cg:'radial-gradient(ellipse at 50% 40%,#181000,#0C0800 60%,#040300)',mandala:'brahman'},
+  vedic:     {label:'Vedic',      cat:'वैदिक ज्ञान',  bgS:'#0A0A14',bgE:'#020208',acc:'#506090',gold:'#A0B8D8',text:'#F0F4FF',sub:'#607080',sym:'✡', tag:'वेद • शास्त्र • इतिहास',   htags:'#VedicKnowledge #SanatanDharma #VedicHistory #VedicGyanKendra',cg:'radial-gradient(ellipse at 60% 30%,#0C0C1C,#060610 60%,#020208)',mandala:'star'},
+  devta:     {label:'Devi/Devta', cat:'देवी-देवता',   bgS:'#180420',bgE:'#060108',acc:'#A03080',gold:'#E880C0',text:'#FFF0F8',sub:'#906070',sym:'☸', tag:'शक्ति • भक्ति • आशीर्वाद', htags:'#DeviDevta #HinduGods #SanatanDharma #VedicGyanKendra',      cg:'radial-gradient(ellipse at 45% 35%,#200428,#0E0214 60%,#060108)',mandala:'devta'},
+  dharma:    {label:'Dharma',     cat:'धर्म तत्व',    bgS:'#041200',bgE:'#010600',acc:'#386820',gold:'#88B840',text:'#F4FFE8',sub:'#507030',sym:'☸', tag:'धर्म • सत्य • अहिंसा',     htags:'#SanatanDharma #Dharma #HinduPhilosophy #VedicGyanKendra',   cg:'radial-gradient(ellipse at 35% 55%,#081A00,#040E00 60%,#010600)',mandala:'dharma'},
+};
+
+let channel='vidhi', active='vastu';
+const DEFAULT_POS={header:0.04,title:0.28,shloka:0.38,body:0.44,english:0.60,footer:0.80};
+let pos={...DEFAULT_POS};
+let lastDataURL='';
+const W=1080,H=1920;
+
+function getT(){return channel==='vidhi'?VIDHI[active]:VEDIC[active];}
+function hr(hex,a){const h=hex.replace('#','');return`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;}
+
 function gradLine(ctx,x1,x2,y,color){
   const g=ctx.createLinearGradient(x1,y,x2,y);
-  g.addColorStop(0,hr(color,0));g.addColorStop(0.5,hr(color,0.75));g.addColorStop(1,hr(color,0));
+  g.addColorStop(0,hr(color,0));g.addColorStop(0.5,hr(color,0.78));g.addColorStop(1,hr(color,0));
   ctx.beginPath();ctx.strokeStyle=g;ctx.lineWidth=2;ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();
 }
-function drawMandala(ctx,t,W,H){
-  const cx=W/2,cy=H/2,R=W*0.59;
-  const style=t.mandala||"wheel";
-  const gold=t.gold;
-  ctx.save();ctx.globalAlpha=0.12;ctx.strokeStyle=gold;
 
-  // Concentric rings — all styles share these
-  [1,0.85,0.66,0.47,0.30,0.17].forEach((f,i)=>{
-    ctx.beginPath();ctx.lineWidth=i===0?W*0.0023:W*0.0011;
+function drawMandalaT(ctx,t,cW,cH){
+  const cx=cW/2,cy=cH/2,R=cW*0.59,gold=t.gold,style=t.mandala;
+  ctx.save();ctx.strokeStyle=gold;
+  ctx.globalAlpha=0.11;
+  [1,0.84,0.66,0.48,0.30,0.16].forEach((f,i)=>{
+    ctx.beginPath();ctx.lineWidth=i===0?cW*0.0022:cW*0.001;
     ctx.arc(cx,cy,R*f,0,Math.PI*2);ctx.stroke();
   });
-
-  if(style==="wheel"){
-    // 8-spoke wheel — Vastu, Numerology, Quote
-    for(let i=0;i<8;i++){
-      const a=i*Math.PI/4;
-      ctx.beginPath();ctx.lineWidth=W*0.0009;
-      ctx.moveTo(cx+R*0.30*Math.sin(a),cy-R*0.30*Math.cos(a));
-      ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();
-    }
-    for(let i=0;i<8;i++){
-      const a=i*Math.PI/4;
-      ctx.beginPath();ctx.lineWidth=W*0.0014;
-      ctx.arc(cx+R*0.66*Math.sin(a),cy-R*0.66*Math.cos(a),R*0.12,0,Math.PI*2);ctx.stroke();
-    }
-    ctx.fillStyle=gold;
-    for(let i=0;i<16;i++){
-      const a=i*Math.PI/8;
-      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.sin(a),cy-(R+W*0.024)*Math.cos(a),W*0.01,0,Math.PI*2);ctx.fill();
-    }
-
-  } else if(style==="zodiac"){
-    // 12-spoke zodiac wheel — Jyotish, Rashifal
-    for(let i=0;i<12;i++){
-      const a=i*Math.PI/6;
-      ctx.beginPath();ctx.lineWidth=W*0.0009;
-      ctx.moveTo(cx+R*0.28*Math.sin(a),cy-R*0.28*Math.cos(a));
-      ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();
-    }
-    for(let i=0;i<12;i++){
-      const a=i*Math.PI/6;
-      ctx.beginPath();ctx.lineWidth=W*0.0012;
-      ctx.arc(cx+R*0.66*Math.sin(a),cy-R*0.66*Math.cos(a),R*0.09,0,Math.PI*2);ctx.stroke();
-    }
-    // Outer zodiac tick marks
-    ctx.fillStyle=gold;
-    for(let i=0;i<24;i++){
-      const a=i*Math.PI/12;
-      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.sin(a),cy-(R+W*0.024)*Math.cos(a),W*0.009,0,Math.PI*2);ctx.fill();
-    }
-
-  } else if(style==="lotus"){
-    // Lotus petals — Mantra
-    for(let i=0;i<8;i++){
-      const a=i*Math.PI/4;
-      const px=cx+R*0.72*Math.sin(a),py=cy-R*0.72*Math.cos(a);
-      const cp1x=cx+R*0.88*Math.sin(a-0.32),cp1y=cy-R*0.88*Math.cos(a-0.32);
-      const cp2x=cx+R*0.88*Math.sin(a+0.32),cp2y=cy-R*0.88*Math.cos(a+0.32);
-      ctx.beginPath();ctx.lineWidth=W*0.0013;
-      ctx.moveTo(cx,cy);ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,px,py);
-      ctx.bezierCurveTo(cp2x,cp2y,cp1x,cp1y,cx,cy);ctx.stroke();
-    }
-    // Inner fine petals
-    for(let i=0;i<16;i++){
-      const a=i*Math.PI/8;
-      ctx.beginPath();ctx.lineWidth=W*0.0007;
-      ctx.moveTo(cx+R*0.12*Math.sin(a),cy-R*0.12*Math.cos(a));
-      ctx.lineTo(cx+R*0.38*Math.sin(a),cy-R*0.38*Math.cos(a));ctx.stroke();
-    }
-    ctx.fillStyle=gold;
-    for(let i=0;i<24;i++){
-      const a=i*Math.PI/12;
-      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.sin(a),cy-(R+W*0.024)*Math.cos(a),W*0.008,0,Math.PI*2);ctx.fill();
-    }
-
-  } else if(style==="sun"){
-    // Sun rays — Panchang
-    for(let i=0;i<16;i++){
-      const a=i*Math.PI/8;
-      ctx.beginPath();ctx.lineWidth=i%2===0?W*0.0015:W*0.0007;
-      ctx.moveTo(cx+R*0.18*Math.sin(a),cy-R*0.18*Math.cos(a));
-      ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();
-    }
-    for(let i=0;i<16;i++){
-      const a=i*Math.PI/8;
-      ctx.beginPath();ctx.lineWidth=W*0.0011;
-      ctx.arc(cx+R*0.52*Math.sin(a),cy-R*0.52*Math.cos(a),R*0.07,0,Math.PI*2);ctx.stroke();
-    }
-    ctx.fillStyle=gold;
-    for(let i=0;i<32;i++){
-      const a=i*Math.PI/16;
-      ctx.beginPath();ctx.arc(cx+(R+W*0.022)*Math.sin(a),cy-(R+W*0.022)*Math.cos(a),W*0.007,0,Math.PI*2);ctx.fill();
-    }
-
-  } else if(style==="yantra"){
-    // Sri Yantra triangles — Yantra
-    [[0.92,true],[0.76,false],[0.62,true],[0.48,false],[0.35,true],[0.22,false]].forEach(([r,up])=>{
-      ctx.beginPath();ctx.lineWidth=W*0.001;
-      const base=up?-Math.PI/2:Math.PI/2;
-      for(let i=0;i<3;i++){
-        const a=base+i*Math.PI*2/3;
-        const x=cx+R*r*Math.cos(a),y=cy+R*r*Math.sin(a);
-        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-      }
-      ctx.closePath();ctx.stroke();
-    });
-    for(let i=0;i<8;i++){
-      const a=i*Math.PI/4;
-      ctx.beginPath();ctx.lineWidth=W*0.0007;
-      ctx.moveTo(cx+R*0.22*Math.cos(a),cy+R*0.22*Math.sin(a));
-      ctx.lineTo(cx+R*0.92*Math.cos(a),cy+R*0.92*Math.sin(a));ctx.stroke();
-    }
-    ctx.fillStyle=gold;
-    for(let i=0;i<24;i++){
-      const a=i*Math.PI/12;
-      ctx.beginPath();ctx.arc(cx+(R+W*0.024)*Math.cos(a),cy+(R+W*0.024)*Math.sin(a),W*0.009,0,Math.PI*2);ctx.fill();
-    }
+  if(style==='vastu'){
+    ctx.globalAlpha=0.09;
+    for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.lineWidth=i%2===0?cW*0.0014:cW*0.0007;ctx.moveTo(cx,cy);ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();}
+    [0.88,0.68,0.50,0.32,0.18].forEach(r=>{ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.beginPath();ctx.lineWidth=cW*0.001;const s=R*r;ctx.rect(-s,-s,s*2,s*2);ctx.stroke();ctx.restore();});
+    for(let i=0;i<8;i++){const a=i*Math.PI/4;ctx.beginPath();ctx.lineWidth=cW*0.0012;ctx.arc(cx+R*0.76*Math.sin(a),cy-R*0.76*Math.cos(a),R*0.10,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=gold;ctx.globalAlpha=0.16;
+    for(let i=0;i<32;i++){const a=i*Math.PI/16;ctx.beginPath();ctx.arc(cx+(R+cW*0.022)*Math.sin(a),cy-(R+cW*0.022)*Math.cos(a),cW*0.009,0,Math.PI*2);ctx.fill();}
+  } else if(style==='jyotish'){
+    ctx.globalAlpha=0.10;
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;ctx.beginPath();ctx.lineWidth=cW*0.0008;ctx.moveTo(cx+R*0.22*Math.sin(a),cy-R*0.22*Math.cos(a));ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();}
+    [[true],[false]].forEach(([up])=>{ctx.beginPath();ctx.lineWidth=cW*0.0018;const base=up?-Math.PI/2:Math.PI/2;for(let i=0;i<3;i++){const a=base+i*Math.PI*2/3;const x=cx+R*0.52*Math.cos(a),y=cy+R*0.52*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();});
+    for(let i=0;i<7;i++){const a=i*Math.PI*2/7-Math.PI/2;ctx.beginPath();ctx.lineWidth=cW*0.0012;ctx.arc(cx+R*0.76*Math.cos(a),cy+R*0.76*Math.sin(a),R*0.08,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=gold;ctx.globalAlpha=0.14;for(let i=0;i<24;i++){const a=i*Math.PI/12;ctx.beginPath();ctx.arc(cx+(R+cW*0.022)*Math.sin(a),cy-(R+cW*0.022)*Math.cos(a),cW*0.009,0,Math.PI*2);ctx.fill();}
+  } else if(style==='rashifal'){
+    ctx.globalAlpha=0.10;
+    for(let i=0;i<12;i++){const a=i*Math.PI/6+Math.PI/12;ctx.beginPath();ctx.lineWidth=cW*0.0008;ctx.moveTo(cx+R*0.18*Math.sin(a),cy-R*0.18*Math.cos(a));ctx.lineTo(cx+R*0.82*Math.sin(a),cy-R*0.82*Math.cos(a));ctx.stroke();}
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;ctx.beginPath();ctx.lineWidth=cW*0.0012;ctx.arc(cx+R*0.66*Math.sin(a),cy-R*0.66*Math.cos(a),R*0.10,a,a+Math.PI*1.4);ctx.stroke();}
+    ctx.fillStyle=gold;ctx.globalAlpha=0.14;
+    for(let i=0;i<24;i++){const a=i*Math.PI/12;const r2=i%2===0?R+cW*0.022:R*0.92;ctx.beginPath();ctx.arc(cx+r2*Math.sin(a),cy-r2*Math.cos(a),cW*(i%2===0?0.009:0.005),0,Math.PI*2);ctx.fill();}
+  } else if(style==='lotus'){
+    ctx.globalAlpha=0.09;
+    for(let i=0;i<16;i++){const a=i*Math.PI/8;const px=cx+R*0.96*Math.sin(a),py=cy-R*0.96*Math.cos(a);const c1x=cx+R*1.05*Math.sin(a-0.22),c1y=cy-R*1.05*Math.cos(a-0.22);const c2x=cx+R*1.05*Math.sin(a+0.22),c2y=cy-R*1.05*Math.cos(a+0.22);ctx.beginPath();ctx.lineWidth=cW*0.001;ctx.moveTo(cx,cy);ctx.bezierCurveTo(c1x,c1y,c2x,c2y,px,py);ctx.bezierCurveTo(c2x,c2y,c1x,c1y,cx,cy);ctx.stroke();}
+    ctx.globalAlpha=0.14;
+    for(let i=0;i<8;i++){const a=i*Math.PI/4+Math.PI/8;const px=cx+R*0.68*Math.sin(a),py=cy-R*0.68*Math.cos(a);const c1x=cx+R*0.82*Math.sin(a-0.32),c1y=cy-R*0.82*Math.cos(a-0.32);const c2x=cx+R*0.82*Math.sin(a+0.32),c2y=cy-R*0.82*Math.cos(a+0.32);ctx.beginPath();ctx.lineWidth=cW*0.0016;ctx.moveTo(cx+R*0.08*Math.sin(a),cy-R*0.08*Math.cos(a));ctx.bezierCurveTo(c1x,c1y,c2x,c2y,px,py);ctx.bezierCurveTo(c2x,c2y,c1x,c1y,cx+R*0.08*Math.sin(a),cy-R*0.08*Math.cos(a));ctx.stroke();}
+    [[0.28,true],[0.20,false],[0.12,true]].forEach(([r,up])=>{ctx.beginPath();ctx.lineWidth=cW*0.0012;const base=up?-Math.PI/2:Math.PI/2;for(let i=0;i<3;i++){const a=base+i*Math.PI*2/3;const x=cx+R*r*Math.cos(a),y=cy+R*r*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();});
+    ctx.fillStyle=gold;ctx.globalAlpha=0.16;
+    for(let i=0;i<32;i++){const a=i*Math.PI/16;ctx.beginPath();ctx.arc(cx+(R+cW*0.022)*Math.sin(a),cy-(R+cW*0.022)*Math.cos(a),cW*0.007,0,Math.PI*2);ctx.fill();}
+  } else if(style==='sun'){
+    ctx.globalAlpha=0.10;
+    for(let i=0;i<16;i++){const a=i*Math.PI/8;ctx.beginPath();ctx.lineWidth=i%2===0?cW*0.0015:cW*0.0007;ctx.moveTo(cx+R*0.18*Math.sin(a),cy-R*0.18*Math.cos(a));ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();}
+    ctx.fillStyle=gold;ctx.globalAlpha=0.14;
+    for(let i=0;i<32;i++){const a=i*Math.PI/16;ctx.beginPath();ctx.arc(cx+(R+cW*0.022)*Math.sin(a),cy-(R+cW*0.022)*Math.cos(a),cW*0.007,0,Math.PI*2);ctx.fill();}
+  } else if(style==='yantra'){
+    ctx.globalAlpha=0.11;
+    [[0.92,true],[0.76,false],[0.62,true],[0.48,false],[0.35,true],[0.22,false]].forEach(([r,up])=>{ctx.beginPath();ctx.lineWidth=cW*0.001;const base=up?-Math.PI/2:Math.PI/2;for(let i=0;i<3;i++){const a=base+i*Math.PI*2/3;const x=cx+R*r*Math.cos(a),y=cy+R*r*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();});
+    ctx.fillStyle=gold;ctx.globalAlpha=0.14;
+    for(let i=0;i<24;i++){const a=i*Math.PI/12;ctx.beginPath();ctx.arc(cx+(R+cW*0.024)*Math.cos(a),cy+(R+cW*0.024)*Math.sin(a),cW*0.009,0,Math.PI*2);ctx.fill();}
+  } else if(style==='wheel'||style==='gita'){
+    ctx.globalAlpha=0.09;
+    const spokes=style==='gita'?18:8,div=style==='gita'?Math.PI/9:Math.PI/4;
+    for(let i=0;i<spokes;i++){const a=i*div;ctx.beginPath();ctx.lineWidth=cW*0.0009;ctx.moveTo(cx+R*0.18*Math.sin(a),cy-R*0.18*Math.cos(a));ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();}
+    ctx.fillStyle=gold;ctx.globalAlpha=0.14;
+    for(let i=0;i<spokes*2;i++){const a=i*Math.PI/spokes;ctx.beginPath();ctx.arc(cx+(R+cW*0.022)*Math.sin(a),cy-(R+cW*0.022)*Math.cos(a),cW*0.009,0,Math.PI*2);ctx.fill();}
+  } else {
+    ctx.globalAlpha=0.09;
+    for(let i=0;i<12;i++){const a=i*Math.PI/6;ctx.beginPath();ctx.lineWidth=cW*0.0009;ctx.moveTo(cx+R*0.28*Math.sin(a),cy-R*0.28*Math.cos(a));ctx.lineTo(cx+R*0.99*Math.sin(a),cy-R*0.99*Math.cos(a));ctx.stroke();}
+    ctx.fillStyle=gold;ctx.globalAlpha=0.14;
+    for(let i=0;i<24;i++){const a=i*Math.PI/12;ctx.beginPath();ctx.arc(cx+(R+cW*0.024)*Math.sin(a),cy-(R+cW*0.024)*Math.cos(a),cW*0.009,0,Math.PI*2);ctx.fill();}
   }
   ctx.restore();
 }
-function drawCorner(ctx,ox,oy,color,fx,fy,W){
-  const s=W/1080;
-  ctx.save();ctx.translate(ox,oy);ctx.scale(fx?-1:1,fy?-1:1);
-  ctx.globalAlpha=0.65;ctx.strokeStyle=color;ctx.lineCap="round";
-  ctx.lineWidth=3.5*s;
-  ctx.beginPath();ctx.moveTo(10*s,130*s);ctx.lineTo(10*s,10*s);ctx.lineTo(130*s,10*s);ctx.stroke();
-  ctx.lineWidth=1.8*s;
-  ctx.beginPath();ctx.moveTo(10*s,52*s);ctx.lineTo(52*s,10*s);ctx.stroke();
+
+function drawCornerT(ctx,ox,oy,color,fx,fy,cW){
+  const s=cW/1080;ctx.save();ctx.translate(ox,oy);ctx.scale(fx?-1:1,fy?-1:1);
+  ctx.globalAlpha=0.65;ctx.strokeStyle=color;ctx.lineCap='round';
+  ctx.lineWidth=3.5*s;ctx.beginPath();ctx.moveTo(10*s,130*s);ctx.lineTo(10*s,10*s);ctx.lineTo(130*s,10*s);ctx.stroke();
+  ctx.lineWidth=1.8*s;ctx.beginPath();ctx.moveTo(10*s,52*s);ctx.lineTo(52*s,10*s);ctx.stroke();
   ctx.fillStyle=color;ctx.beginPath();ctx.arc(10*s,10*s,8*s,0,Math.PI*2);ctx.fill();
   ctx.restore();
 }
-function drawBg(ctx,t,W,H){
-  const bg=ctx.createRadialGradient(W*0.35,H*0.22,0,W/2,H/2,W*0.95);
+
+function drawBgT(ctx,t,cW,cH){
+  const bg=ctx.createRadialGradient(cW*0.35,cH*0.22,0,cW/2,cH/2,cW*0.95);
   bg.addColorStop(0,t.bgS);bg.addColorStop(1,t.bgE);
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  const vig=ctx.createRadialGradient(W/2,H/2,H*0.18,W/2,H/2,H*0.78);
-  vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,0.58)");
-  ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
-  drawMandala(ctx,t,W,H);
-  drawCorner(ctx,0,0,t.gold,false,false,W);
-  drawCorner(ctx,W,0,t.gold,true,false,W);
-  drawCorner(ctx,0,H,t.gold,false,true,W);
-  drawCorner(ctx,W,H,t.gold,true,true,W);
+  ctx.fillStyle=bg;ctx.fillRect(0,0,cW,cH);
+  const GLOWS={vastu:'rgba(180,80,20,0.22)',jyotish:'rgba(120,80,220,0.25)',rashifal:'rgba(80,50,180,0.28)',lotus:'rgba(180,40,120,0.22)',dharma:'rgba(40,120,0,0.18)',sun:'rgba(180,140,0,0.18)',star:'rgba(60,80,160,0.20)',devta:'rgba(160,30,120,0.22)'};
+  const gc=GLOWS[t.mandala];
+  if(gc){const g=ctx.createRadialGradient(cW/2,cH/2,0,cW/2,cH/2,cW*0.55);g.addColorStop(0,gc);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,cW,cH);}
+  const vig=ctx.createRadialGradient(cW/2,cH/2,cH*0.18,cW/2,cH/2,cH*0.78);
+  vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,'rgba(0,0,0,0.65)');
+  ctx.fillStyle=vig;ctx.fillRect(0,0,cW,cH);
+  drawMandalaT(ctx,t,cW,cH);
+  drawCornerT(ctx,0,0,t.gold,false,false,cW);drawCornerT(ctx,cW,0,t.gold,true,false,cW);
+  drawCornerT(ctx,0,cH,t.gold,false,true,cW);drawCornerT(ctx,cW,cH,t.gold,true,true,cW);
 }
-function wrapText(ctx,text,cx,y,maxW,lh){
-  if(!text)return 0;
-  let lines=0;
-  text.split("\n").forEach(para=>{
-    if(!para.trim()){lines++;return;}
-    let line="";
-    para.split(/\s+/).forEach(word=>{
-      const test=line?line+" "+word:word;
-      if(ctx.measureText(test).width>maxW&&line){ctx.fillText(line,cx,y+lines*lh);lines++;line=word;}
-      else line=test;
-    });
+
+function wrapTextT(ctx,text,cx,y,maxW,lh){
+  if(!text)return 0;let lines=0;
+  text.split('\n').forEach(para=>{
+    if(!para.trim()){lines++;return;}let line='';
+    para.split(/\s+/).forEach(word=>{const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxW&&line){ctx.fillText(line,cx,y+lines*lh);lines++;line=word;}else line=test;});
     if(line){ctx.fillText(line,cx,y+lines*lh);lines++;}
-  });
-  return lines;
+  });return lines;
 }
 
-// ═══════════════════════════════════════════════
-// RENDER BACKGROUND (preview canvas 300×533)
-// ═══════════════════════════════════════════════
-function renderBg(){
-  const cv=document.getElementById("bg-canvas");
-  drawBg(cv.getContext("2d"),T[active],300,533);
+function tmplRenderBg(){
+  const cv=document.getElementById('tmpl-bg');if(!cv)return;
+  try{drawBgT(cv.getContext('2d'),getT(),300,533);}catch(e){console.error('tmplRenderBg:',e);}
 }
 
-// ═══════════════════════════════════════════════
-// UPDATE BLOCK DISPLAY
-// ═══════════════════════════════════════════════
-function updateBlocks(){
-  const t=T[active];
-  const title=document.getElementById("f-title").value.trim();
-  const body=document.getElementById("f-body").value.trim();
-  const tags=document.getElementById("f-tags").value.trim();
+function tmplRenderSave(){
+  const t=getT();
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');const SY=H/533;
+  drawBgT(ctx,t,W,H);
+  ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  const bname=channel==='vidhi'?'विधि चक्र':'वैदिक ज्ञान केन्द्र';
+  const bsub=channel==='vidhi'?'VIDHI CHAKRA':'VEDIC GYAN KENDRA';
+  const getY=id=>{const el=document.getElementById(id);return el?(parseFloat(el.style.top)||0)*SY:0;};
+  const titleVal=channel==='vidhi'?document.getElementById('tmpl-title').value.trim():document.getElementById('tmplv-title').value.trim();
+  const bodyVal=channel==='vidhi'?document.getElementById('tmpl-body').value.trim():'';
+  const shlokaVal=channel==='vedic'?document.getElementById('tmplv-shloka').value.trim():'';
+  const engVal=channel==='vedic'?document.getElementById('tmplv-english').value.trim():'';
+  const tagsVal=channel==='vidhi'?document.getElementById('tmpl-tags').value.trim():document.getElementById('tmplv-tags').value.trim();
 
-  // header
-  const h=document.getElementById("db-header");
-  h.style.top=(pos.header*533)+"px";
-  h.querySelector(".b-badge").textContent=t.cat;
-  h.querySelector(".b-badge").style.color=t.acc;
-  h.querySelector(".b-badge").style.borderColor=t.acc+"80";
-  h.querySelector(".b-sym").style.color=t.gold;
-
-  // title
-  const ti=document.getElementById("db-title");
-  if(title){
-    ti.style.display="block";
-    ti.style.top=(pos.title*533)+"px";
-    ti.querySelector(".b-title").textContent=title;
-    ti.querySelector(".b-title").style.color=t.text;
-  } else {
-    ti.style.display="none";
-  }
-
-  // body
-  const b=document.getElementById("db-body");
-  b.style.top=(pos.body*533)+"px";
-  b.querySelector(".b-body").textContent=body||"Your content will appear here...";
-  b.querySelector(".b-body").style.color=body?t.text:hr(t.sub,0.35);
-
-  // footer
-  const f=document.getElementById("db-footer");
-  f.style.top=(pos.footer*533)+"px";
-  f.querySelector(".b-tagline").textContent=t.tag;
-  f.querySelector(".b-hashtags").textContent=tags||t.htags;
-  f.querySelector(".b-footbrand").style.color=t.gold;
-  f.querySelector(".f-sym").style.color=t.gold;
-  f.querySelector(".f-sym").textContent=t.sym;
-}
-
-// ═══════════════════════════════════════════════
-// RENDER FULL SAVE CANVAS
-// ═══════════════════════════════════════════════
-function renderSaveCanvas(){
-  const t=T[active];
-  const cv=document.getElementById("save-canvas");
-  const ctx=cv.getContext("2d");
-  const W=1080,H=1920,SY=H/533;
-  const title=document.getElementById("f-title").value.trim();
-  const body=document.getElementById("f-body").value.trim();
-  const tags=document.getElementById("f-tags").value.trim();
-
-  // Read actual pixel positions from DOM elements, then scale to canvas
-  // This guarantees saved image matches what you see in the preview exactly
-  const getY=id=>(parseFloat(document.getElementById(id).style.top)||0)*SY;
-
-  ctx.clearRect(0,0,W,H);
-  drawBg(ctx,t,W,H);
-  ctx.textAlign="center";ctx.textBaseline="alphabetic";
-
-  // HEADER
-  let y=getY("db-header")+36;
-  ctx.font="400 36px 'EB Garamond',serif";ctx.fillStyle=hr(t.sub,0.85);
-  ctx.fillText("॥  विधि चक्र  ॥",W/2,y);y+=26;
-  gradLine(ctx,240,W/2-46,y,t.gold);gradLine(ctx,W/2+46,W-240,y,t.gold);y+=6;
-  ctx.fillStyle=t.gold;ctx.font="36px serif";ctx.fillText(t.sym,W/2,y+30);y+=56;
-  ctx.font="400 36px 'EB Garamond',serif";
+  // Header
+  let y=getY('tmpl-db-header')+38;
+  ctx.font=`400 34px 'Tiro Devanagari Sanskrit',serif`;ctx.fillStyle=hr(t.sub,0.85);ctx.fillText(`॥  ${bname}  ॥`,W/2,y);y+=26;
+  gradLine(ctx,240,W/2-50,y,t.gold);gradLine(ctx,W/2+50,W-240,y,t.gold);y+=6;
+  ctx.fillStyle=t.gold;ctx.font='38px serif';ctx.fillText(t.sym,W/2,y+32);y+=58;
+  ctx.font=`400 36px 'Tiro Devanagari Sanskrit',serif`;
   const cw=ctx.measureText(t.cat).width+80;
-  ctx.strokeStyle=hr(t.acc,0.85);ctx.lineWidth=1.8;
-  ctx.strokeRect(W/2-cw/2,y,cw,58);
+  ctx.strokeStyle=hr(t.acc,0.85);ctx.lineWidth=1.8;ctx.strokeRect(W/2-cw/2,y,cw,58);
   ctx.fillStyle=hr(t.acc,0.92);ctx.fillText(t.cat,W/2,y+42);
 
-  // TITLE
-  if(title){
-    y=getY("db-title")+68;
-    ctx.font="700 68px 'Philosopher',serif";ctx.fillStyle=t.text;
-    wrapText(ctx,title,W/2,y,W-220,90);
+  // Title
+  if(titleVal){y=getY('tmpl-db-title')+64;ctx.font=`700 64px 'Philosopher',serif`;ctx.fillStyle=t.text;wrapTextT(ctx,titleVal,W/2,y,W-220,86);}
+  // Shloka
+  if(shlokaVal){y=getY('tmpl-db-shloka')+56;ctx.font=`italic 400 52px 'Tiro Devanagari Sanskrit',serif`;ctx.fillStyle='#FFE090';wrapTextT(ctx,shlokaVal,W/2,y,W-200,76);}
+  // Divider
+  if(shlokaVal&&engVal){const dY=getY('tmpl-db-english')-28;gradLine(ctx,360,W/2-60,dY,'#C8A050');ctx.fillStyle='#C8A050';ctx.font='32px serif';ctx.fillText('✦',W/2,dY+12);gradLine(ctx,W/2+60,W-360,dY,'#C8A050');}
+  // English
+  if(engVal){y=getY('tmpl-db-english')+56;ctx.font=`italic 400 50px 'EB Garamond',Georgia,serif`;ctx.fillStyle='#E8F0FF';wrapTextT(ctx,engVal,W/2,y,W-220,74);}
+  // Body
+  if(bodyVal){y=getY('tmpl-db-body')+14;ctx.font=`400 50px 'EB Garamond',Georgia,serif`;ctx.fillStyle=t.text;wrapTextT(ctx,bodyVal,W/2,y,W-240,76);}
+  // Footer
+  y=getY('tmpl-db-footer')+28;
+  ctx.font=`400 32px 'Tiro Devanagari Sanskrit',serif`;ctx.fillStyle=hr(t.sub,0.68);ctx.fillText(t.tag,W/2,y);y+=40;
+  gradLine(ctx,240,W/2-50,y,t.gold);gradLine(ctx,W/2+50,W-240,y,t.gold);y+=6;
+  ctx.fillStyle=t.gold;ctx.font='38px serif';ctx.fillText(t.sym,W/2,y+30);y+=72;
+  ctx.font=`400 26px 'EB Garamond',serif`;ctx.fillStyle=hr(t.sub,0.48);
+  const hl=wrapTextT(ctx,tagsVal||t.htags,W/2,y,W-200,38);y+=hl*38+44;
+  ctx.fillStyle=t.gold;ctx.font=`400 58px 'Tiro Devanagari Sanskrit',serif`;ctx.fillText(bname,W/2,y);y+=52;
+  ctx.fillStyle=hr(t.sub,0.68);ctx.font=`400 26px 'Philosopher',serif`;ctx.fillText(bsub,W/2,y);
+  return cv.toDataURL('image/png');
+}
+
+// ── Drag system ──
+function tmplInitDrag(gripEl,blockId){
+  const PH=533;let sY=0,sP=0,drag=false;
+  const start=y=>{drag=true;sY=y;sP=pos[blockId];gripEl.style.color='rgba(255,200,80,0.8)';};
+  const move=y=>{if(!drag)return;pos[blockId]=Math.max(0,Math.min(0.92,sP+(y-sY)/PH));document.getElementById('tmpl-db-'+blockId).style.top=(pos[blockId]*PH)+'px';};
+  const end=()=>{drag=false;gripEl.style.color='rgba(255,200,80,0.3)';};
+  gripEl.addEventListener('mousedown',e=>{start(e.clientY);e.preventDefault();},{passive:false});
+  window.addEventListener('mousemove',e=>{if(drag)move(e.clientY);});
+  window.addEventListener('mouseup',()=>{if(drag)end();});
+  gripEl.addEventListener('touchstart',e=>{start(e.touches[0].clientY);e.preventDefault();},{passive:false});
+  window.addEventListener('touchmove',e=>{if(drag){move(e.touches[0].clientY);e.preventDefault();}},{passive:false});
+  window.addEventListener('touchend',()=>{if(drag)end();});
+}
+
+function tmplResetPos(){Object.assign(pos,DEFAULT_POS);tmplUpdateBlocks();}
+
+// ── Block visual update ──
+function tmplUpdateBlocks(){
+  const t=getT();
+  const bname=channel==='vidhi'?'विधि चक्र':'वैदिक ज्ञान केन्द्र';
+  const titleVal=channel==='vidhi'?document.getElementById('tmpl-title').value.trim():document.getElementById('tmplv-title').value.trim();
+  const bodyVal=channel==='vidhi'?document.getElementById('tmpl-body').value.trim():'';
+  const shlokaVal=channel==='vedic'?document.getElementById('tmplv-shloka').value.trim():'';
+  const engVal=channel==='vedic'?document.getElementById('tmplv-english').value.trim():'';
+  const tagsVal=channel==='vidhi'?document.getElementById('tmpl-tags').value.trim():document.getElementById('tmplv-tags').value.trim();
+
+  const h=document.getElementById('tmpl-db-header');if(h){
+    h.style.top=(pos.header*533)+'px';
+    h.querySelector('.tdb-brand').textContent=`॥  ${bname}  ॥`;
+    h.querySelector('.tdb-brand').style.color=hr(t.sub,0.85);
+    h.querySelector('.tdb-sym').style.color=t.gold;h.querySelector('.tdb-sym').textContent=t.sym;
+    h.querySelector('.tdb-badge').textContent=t.cat;h.querySelector('.tdb-badge').style.color=t.acc;h.querySelector('.tdb-badge').style.border=`1px solid ${t.acc}80`;
   }
-
-  // BODY
-  if(body){
-    y=getY("db-body")+14;
-    ctx.font="400 50px 'EB Garamond',Georgia,serif";ctx.fillStyle=t.text;
-    wrapText(ctx,body,W/2,y,W-240,76);
+  ['title','shloka','body','english'].forEach(k=>{
+    const el=document.getElementById(`tmpl-db-${k}`);if(!el)return;
+    const val=k==='title'?titleVal:k==='body'?bodyVal:k==='shloka'?shlokaVal:engVal;
+    el.style.display=val?'block':'none';
+    if(val){el.style.top=(pos[k]||pos.body)*533+'px';el.querySelector(`.tdb-${k}`).textContent=val;}
+  });
+  const f=document.getElementById('tmpl-db-footer');if(f){
+    f.style.top=(pos.footer*533)+'px';
+    f.querySelector('.tdb-tag').textContent=t.tag;f.querySelector('.tdb-tag').style.color=hr(t.sub,0.75);
+    f.querySelector('.tdb-htags').textContent=tagsVal||t.htags;
+    f.querySelector('.tdb-footbrand').textContent=bname;f.querySelector('.tdb-footbrand').style.color=t.gold;
+    f.querySelector('.tdb-footsym').textContent=t.sym;f.querySelector('.tdb-footsym').style.color=t.gold;
   }
-
-  // FOOTER
-  y=getY("db-footer")+28;
-  ctx.font="400 32px 'EB Garamond',serif";ctx.fillStyle=hr(t.sub,0.68);
-  ctx.fillText(t.tag,W/2,y);y+=40;
-  gradLine(ctx,240,W/2-46,y,t.gold);gradLine(ctx,W/2+46,W-240,y,t.gold);y+=8;
-  ctx.fillStyle=t.gold;ctx.font="38px serif";ctx.fillText(t.sym,W/2,y+30);y+=70;
-  // measure hashtag lines first so brand never overlaps
-  ctx.font="400 26px 'EB Garamond',serif";ctx.fillStyle=hr(t.sub,0.48);
-  const hLines=wrapText(ctx,tags||t.htags,W/2,y,W-200,38);
-  y+=hLines*38+40;
-  ctx.fillStyle=t.gold;ctx.font="700 62px 'Philosopher',serif";
-  ctx.fillText("विधि चक्र",W/2,y);y+=58;
-  ctx.fillStyle=hr(t.sub,0.68);ctx.font="400 28px 'EB Garamond',serif";
-  ctx.fillText("V I D H I   C H A K R A",W/2,y);
-
-  return cv.toDataURL("image/png");
 }
 
-// ═══════════════════════════════════════════════
-// SAVE
-// ═══════════════════════════════════════════════
-function saveImage(){
-  const btn=document.getElementById("save-btn");
-  btn.textContent="⏳ Building...";
-  btn.disabled=true;
+function tmplUpdate(){tmplUpdateBlocks();}
 
-  // short delay so fonts are applied
-  setTimeout(()=>{
-    lastDataURL=renderSaveCanvas();
-    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-    const modalImg=document.getElementById("modal-img");
-    const modalMsg=document.getElementById("modal-msg");
-    const modalDl=document.getElementById("modal-dl");
-
-    modalImg.src=lastDataURL;
-
-    if(isIOS){
-      modalMsg.innerHTML="Long-press the image above<br/>then tap <strong style='color:#E8A020'>Save to Photos</strong>";
-      modalDl.style.display="none";
-    } else {
-      modalMsg.innerHTML="Tap the button below to download<br/>or long-press the image to save";
-      modalDl.style.display="inline-block";
-    }
-
-    document.getElementById("save-modal").classList.add("open");
-    btn.textContent="⬇ Save Image";
-    btn.disabled=false;
-  },200);
-}
-
-function triggerDownload(){
-  if(!lastDataURL)return;
-  const a=document.createElement("a");
-  a.href=lastDataURL;
-  a.download=`vidhichakra-${active}.png`;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-}
-
-// ═══════════════════════════════════════════════
-// DRAG — only grip handle triggers drag
-// ═══════════════════════════════════════════════
-function initDrag(gripEl,blockId){
-  const H=533;
-  let startClientY=0,startPos=0,dragging=false;
-
-  const start=clientY=>{
-    dragging=true;
-    startClientY=clientY;
-    startPos=pos[blockId];
-    gripEl.style.color="rgba(255,200,80,0.8)";
-  };
-  const move=clientY=>{
-    if(!dragging)return;
-    const dy=(clientY-startClientY)/H;
-    pos[blockId]=Math.max(0,Math.min(0.92,startPos+dy));
-    document.getElementById("db-"+blockId).style.top=(pos[blockId]*H)+"px";
-  };
-  const end=()=>{
-    dragging=false;
-    gripEl.style.color="rgba(255,200,80,0.35)";
-  };
-
-  gripEl.addEventListener("mousedown",e=>{start(e.clientY);e.preventDefault();},{passive:false});
-  window.addEventListener("mousemove",e=>{if(dragging)move(e.clientY);});
-  window.addEventListener("mouseup",()=>{if(dragging)end();});
-
-  gripEl.addEventListener("touchstart",e=>{start(e.touches[0].clientY);e.preventDefault();},{passive:false});
-  window.addEventListener("touchmove",e=>{if(dragging){move(e.touches[0].clientY);e.preventDefault();}},{passive:false});
-  window.addEventListener("touchend",()=>{if(dragging)end();});
-}
-
-function resetPositions(){
-  Object.assign(pos,DEFAULT_POS);
-  updateBlocks();
-}
-
-// ═══════════════════════════════════════════════
-// BUILD UI
-// ═══════════════════════════════════════════════
-function buildDragBlocks(){
-  const wrap=document.getElementById("preview-wrap");
-  const defs=[
-    {id:"db-header",posKey:"header",inner:`
-      <div class="b-brand">॥  विधि चक्र  ॥</div>
-      <div class="b-hline"></div>
-      <span class="b-sym">◈</span>
-      <div class="b-hline"></div>
-      <span class="b-badge"></span>`},
-    {id:"db-title",posKey:"title",inner:`
-      <div class="b-title"></div>`},
-    {id:"db-body",posKey:"body",inner:`
-      <div class="b-body"></div>`},
-    {id:"db-footer",posKey:"footer",inner:`
-      <div class="b-tagline"></div>
-      <div class="b-hline"></div>
-      <span class="f-sym b-sym"></span>
-      <div class="b-hline"></div>
-      <div class="b-hashtags"></div>
-      <div class="b-footbrand">विधि चक्र</div>
-      <div class="b-footsub">VIDHI CHAKRA</div>`},
+// ── Build drag blocks ──
+function tmplBuildBlocks(){
+  const wrap=document.getElementById('tmpl-wrap');
+  // Remove existing blocks
+  wrap.querySelectorAll('.tmpl-db').forEach(e=>e.remove());
+  const blockDefs=[
+    {id:'header', html:`<div class="tdb-brand" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:9px;letter-spacing:1px"></div><div style="height:1px;background:linear-gradient(to right,transparent,rgba(240,160,48,0.5),transparent);margin:2px 20px"></div><span class="tdb-sym" style="font-size:12px;display:block;margin:2px 0"></span><div style="height:1px;background:linear-gradient(to right,transparent,rgba(240,160,48,0.5),transparent);margin:2px 20px"></div><span class="tdb-badge" style="display:inline-block;padding:2px 10px;font-family:'Tiro Devanagari Sanskrit',serif;font-size:9px;margin-top:3px;border-radius:1px"></span>`},
+    {id:'title',  html:`<div class="tdb-title" style="font-family:'Philosopher',serif;font-size:16px;font-weight:700;line-height:1.3"></div>`},
+    {id:'shloka', html:`<div class="tdb-shloka" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:12px;line-height:1.8;color:#FFE090;font-style:italic"></div>`},
+    {id:'body',   html:`<div class="tdb-body" style="font-family:'EB Garamond',Georgia,serif;font-size:13px;line-height:1.65"></div>`},
+    {id:'english',html:`<div class="tdb-english" style="font-family:'EB Garamond',serif;font-size:12px;line-height:1.65;color:#E8F0FF;font-style:italic"></div>`},
+    {id:'footer', html:`<div class="tdb-tag" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:9px;letter-spacing:1px"></div><div style="height:1px;background:linear-gradient(to right,transparent,rgba(240,160,48,0.5),transparent);margin:2px 20px"></div><span class="tdb-footsym" style="font-size:11px;display:block;margin:2px 0"></span><div style="height:1px;background:linear-gradient(to right,transparent,rgba(240,160,48,0.5),transparent);margin:2px 20px"></div><div class="tdb-htags" style="font-family:'EB Garamond',serif;font-size:7px;margin:2px 0"></div><div class="tdb-footbrand" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px"></div><div style="font-family:'Philosopher',serif;font-size:7px;letter-spacing:3px">VIDHI CHAKRA</div>`},
   ];
-  defs.forEach(d=>{
-    const div=document.createElement("div");
-    div.id=d.id;div.className="drag-block";
-    div.innerHTML=`<span class="drag-grip">⠿ drag</span><div class="block-inner">${d.inner}</div>`;
+  blockDefs.forEach(b=>{
+    const div=document.createElement('div');
+    div.id=`tmpl-db-${b.id}`;div.className='tmpl-db';
+    div.style.cssText='position:absolute;left:0;right:0;text-align:center;pointer-events:none';
+    div.innerHTML=`<span class="tmpl-grip" style="display:block;padding:4px 0 2px;color:rgba(255,200,80,0.3);font-size:10px;letter-spacing:3px;cursor:grab;touch-action:none;pointer-events:all;user-select:none">⠿ drag</span><div style="padding:3px 8px 5px;border:1px dashed rgba(255,200,80,0.15);border-radius:3px;pointer-events:none">${b.html}</div>`;
     wrap.appendChild(div);
-    initDrag(div.querySelector(".drag-grip"),d.posKey);
+    tmplInitDrag(div.querySelector('.tmpl-grip'),b.id);
   });
 }
 
-function buildTabs(){
-  const bar=document.getElementById("tabs");
-  Object.entries(T).forEach(([key,tmpl])=>{
-    const btn=document.createElement("button");
-    btn.className="tab-btn";btn.id="tab-"+key;btn.textContent=tmpl.label;
-    btn.style.color=tmpl.gold;btn.style.border=`1px solid ${tmpl.gold}70`;
-    btn.onclick=()=>switchTemplate(key);
+// ── Build tabs ──
+function tmplBuildTabs(){
+  const TEMPLATES=channel==='vidhi'?VIDHI:VEDIC;
+  const bar=document.getElementById('tmpl-tabs');bar.innerHTML='';
+  Object.entries(TEMPLATES).forEach(([key,tmpl])=>{
+    const btn=document.createElement('button');
+    btn.style.cssText=`padding:6px 13px;font-family:'Philosopher',serif;font-size:12px;font-weight:700;cursor:pointer;border-radius:3px;transition:all 0.2s;background:${active===key?tmpl.gold:'transparent'};color:${active===key?'#1A0800':tmpl.gold};border:1px solid ${tmpl.gold}70;white-space:nowrap;flex-shrink:0`;
+    btn.textContent=tmpl.label;
+    btn.onclick=()=>{active=key;tmplBuildTabs();tmplRenderBg();tmplUpdateBlocks();tmplSyncStyle();};
     bar.appendChild(btn);
   });
 }
 
-function buildThumbs(){
-  const row=document.getElementById("thumb-row");
-  Object.entries(T).forEach(([key,tmpl])=>{
-    const d=document.createElement("div");
-    d.className="thumb"+(key===active?" active":"");d.id="thumb-"+key;
-    d.innerHTML=`<div class="thumb-box" style="background:${tmpl.cg};border:1px solid ${tmpl.gold}25">
-      <div><div class="thumb-sym" style="color:${tmpl.gold}">${tmpl.sym}</div>
-      <div class="thumb-word" style="color:${tmpl.sub}">विधि</div></div></div>
-      <div class="thumb-name" style="color:${tmpl.gold}">${tmpl.label.toUpperCase()}</div>`;
-    d.onclick=()=>switchTemplate(key);
-    row.appendChild(d);
+function tmplSyncStyle(){
+  const t=getT();
+  document.getElementById('tmpl-save-btn').style.cssText=`margin-top:10px;width:300px;padding:12px 0;border:none;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-size:14px;font-weight:700;letter-spacing:1px;color:#1A0800;background:${t.gold}`;
+  document.getElementById('tmpl-cat-label').textContent=t.cat;
+  document.getElementById('tmpl-cat-label').style.color=t.sub;
+}
+
+function tmplSetChannel(ch){
+  channel=ch;
+  active=ch==='vidhi'?'vastu':'gita';
+  // Toggle field visibility
+  document.getElementById('tmpl-fields-vidhi').style.display=ch==='vidhi'?'block':'none';
+  document.getElementById('tmpl-fields-vedic').style.display=ch==='vedic'?'block':'none';
+  // Toggle channel button styles
+  document.getElementById('ch-vidhi').className=ch==='vidhi'?'btn btn-gold':'btn btn-outline';
+  document.getElementById('ch-vedic').className=ch==='vedic'?'btn btn-gold':'btn btn-outline';
+  Object.assign(pos,DEFAULT_POS);
+  tmplBuildTabs();tmplBuildBlocks();tmplRenderBg();tmplUpdateBlocks();tmplSyncStyle();
+}
+
+window.tmplSave=function(){
+  const btn=document.getElementById('tmpl-save-btn');
+  btn.textContent='⏳ Building...';btn.disabled=true;
+  setTimeout(()=>{
+    lastDataURL=tmplRenderSave();
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+    document.getElementById('tmpl-modal-img').src=lastDataURL;
+    const msg=document.getElementById('tmpl-modal-msg');
+    const dl=document.getElementById('tmpl-modal-dl');
+    if(isIOS){msg.innerHTML="Long-press the image<br/>then tap <strong style='color:var(--gold)'>Save to Photos</strong>";dl.style.display='none';}
+    else{msg.innerHTML="Tap Download to save the PNG";dl.style.display='inline-block';dl.style.background=getT().gold;dl.style.color='#1A0800';}
+    document.getElementById('tmpl-modal').style.display='flex';
+    btn.textContent='⬇ Save Image';btn.disabled=false;
+  },200);
+};
+window.tmplDL=function(){
+  if(!lastDataURL)return;
+  const a=document.createElement('a');a.href=lastDataURL;a.download=`vidhichakra-${channel}-${active}.png`;document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+
+// Init when templates tab is first opened
+window.tmplInit=function(){
+  if(document.querySelector('.tmpl-db'))return; // already built
+  tmplBuildBlocks();tmplBuildTabs();tmplRenderBg();tmplUpdateBlocks();tmplSyncStyle();
+};
+
+})(); // end IIFE
+
+// ════════════════════════════════════════════════════════════════
+// STUDY TAB
+// ════════════════════════════════════════════════════════════════
+const studyBooks=[];
+let studyZoomLevel=1.0;
+
+function studyHandleDrop(e){
+  e.preventDefault();
+  document.getElementById('study-upload-area').style.borderColor='var(--dim)';
+  studyLoadFiles(e.dataTransfer.files);
+}
+
+function studyLoadFiles(files){
+  Array.from(files).forEach(file=>{
+    const id='book-'+Date.now()+Math.random().toString(36).slice(2);
+    const book={id,name:file.name,type:file.type,size:file.size,file};
+    studyBooks.push(book);
+    studyRenderBookList();
+    studyOpenBook(book);
   });
 }
 
-function syncStyles(){
-  const t=T[active];
-  Object.entries(T).forEach(([key,tmpl])=>{
-    const btn=document.getElementById("tab-"+key);
-    btn.style.background=key===active?tmpl.gold:"transparent";
-    btn.style.color=key===active?"#1A0800":tmpl.gold;
-    document.getElementById("thumb-"+key).className="thumb"+(key===active?" active":"");
-  });
-  document.getElementById("cat-label").textContent=t.cat;
-  document.getElementById("cat-label").style.color=t.sub;
-  ["f-title","f-body","f-tags"].forEach(id=>{
-    document.getElementById(id).style.border=`1px solid ${t.acc}35`;
-  });
-  document.getElementById("f-tags").style.color=t.sub;
-  document.getElementById("f-tags").placeholder=t.htags;
-  document.getElementById("save-btn").style.background=t.gold;
+function studyRenderBookList(){
+  const container=document.getElementById('study-books');
+  if(!studyBooks.length){container.innerHTML='';return;}
+  container.innerHTML=`<div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Uploaded Books (${studyBooks.length})</div>`+
+    studyBooks.map(b=>`
+      <div style="display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--dim);border-radius:4px;padding:8px 12px;margin-bottom:6px">
+        <span style="font-size:18px">${b.type.includes('pdf')?'📄':'🖼'}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div>
+          <div style="font-size:10px;color:var(--muted)">${(b.size/1024/1024).toFixed(1)} MB</div>
+        </div>
+        <button class="btn btn-outline" onclick="studyOpenBookById('${b.id}')" style="padding:4px 12px;font-size:11px;flex-shrink:0">Open</button>
+        <button onclick="studyRemoveBook('${b.id}')" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px">✕</button>
+      </div>`).join('');
 }
 
-function switchTemplate(key){
-  active=key;
-  document.getElementById("f-title").value="";
-  document.getElementById("f-body").value="";
-  document.getElementById("f-tags").value="";
-  syncStyles();renderBg();updateBlocks();
+function studyOpenBookById(id){
+  const book=studyBooks.find(b=>b.id===id);
+  if(book)studyOpenBook(book);
 }
 
-window.addEventListener("DOMContentLoaded",()=>{
-  buildTabs();buildThumbs();buildDragBlocks();
-  syncStyles();renderBg();updateBlocks();
-  ["f-title","f-body","f-tags"].forEach(id=>{
-    document.getElementById(id).addEventListener("input",updateBlocks);
-  });
+function studyOpenBook(book){
+  const viewer=document.getElementById('study-viewer');
+  const content=document.getElementById('study-content');
+  document.getElementById('study-book-title').textContent=book.name;
+  viewer.style.display='block';
+  const url=URL.createObjectURL(book.file);
+  if(book.type.includes('pdf')){
+    content.innerHTML=`<iframe src="${url}" style="width:100%;height:65vh;border:none;border-radius:4px;background:#fff" title="${book.name}"></iframe>`;
+  } else if(book.type.includes('image')){
+    content.innerHTML=`<div style="text-align:center;padding:8px"><img src="${url}" style="max-width:100%;transform-origin:top center;transform:scale(${studyZoomLevel});transition:transform 0.2s" id="study-img"/></div>`;
+  } else if(book.type.includes('text')||book.name.endsWith('.txt')||book.name.endsWith('.md')){
+    const reader=new FileReader();
+    reader.onload=e=>{content.innerHTML=`<pre style="font-family:'EB Garamond',Georgia,serif;font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;padding:12px">${e.target.result}</pre>`;};
+    reader.readAsText(book.file);
+  } else {
+    content.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted);font-family:'EB Garamond',serif"><div style="font-size:32px;margin-bottom:12px">📄</div><div>This file type cannot be previewed directly.<br/>Please open it in an external viewer.</div></div>`;
+  }
+  studyUpdateZoomLabel();
+}
+
+function studyRemoveBook(id){
+  const idx=studyBooks.findIndex(b=>b.id===id);
+  if(idx>-1)studyBooks.splice(idx,1);
+  studyRenderBookList();
+  if(!studyBooks.length)studyClose();
+}
+
+function studyZoom(delta){
+  studyZoomLevel=Math.max(0.5,Math.min(3.0,studyZoomLevel+delta));
+  const img=document.getElementById('study-img');
+  if(img)img.style.transform=`scale(${studyZoomLevel})`;
+  studyUpdateZoomLabel();
+}
+function studyUpdateZoomLabel(){document.getElementById('study-zoom-label').textContent=Math.round(studyZoomLevel*100)+'%';}
+function studyClose(){document.getElementById('study-viewer').style.display='none';}
+
+// Auto-save notes to sessionStorage
+document.addEventListener('DOMContentLoaded',()=>{
+  const notes=document.getElementById('study-notes');
+  if(notes){
+    const saved=sessionStorage.getItem('jyotish-notes');
+    if(saved)notes.value=saved;
+    notes.addEventListener('input',()=>{
+      sessionStorage.setItem('jyotish-notes',notes.value);
+      document.getElementById('study-notes-status').textContent='✓ Saved · '+new Date().toLocaleTimeString();
+    });
+  }
 });
+}catch(e){console.error('Template/Study init error:',e);}
 </script>
 </body>
 </html>

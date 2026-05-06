@@ -69,9 +69,9 @@ font-family:‘EB Garamond’,serif;
 #tabs{
 display:flex;
 overflow-x:auto;
-border-bottom:2px solid var(–dim);
+border-bottom:2px solid #2A2A40;
 scrollbar-width:none;
-background:var(–bg2);
+background:#12122A;
 }
 #tabs::-webkit-scrollbar{display:none}
 .tab{
@@ -82,16 +82,20 @@ font-weight:700;
 cursor:pointer;
 border-bottom:3px solid transparent;
 white-space:nowrap;
-color:var(–muted);
+color:#9090B8;
 transition:all 0.2s;
 flex-shrink:0;
 background:transparent;
+background-color:transparent;
 border-top:none;
 border-left:none;
 border-right:none;
+outline:none;
+-webkit-appearance:none;
+appearance:none;
 }
-.tab:hover{color:var(–text)}
-.tab.active{color:var(–gold);border-bottom-color:var(–gold);background:rgba(240,192,64,0.06)}
+.tab:hover{color:#E8E4F0;}
+.tab.active{color:#F0C040;border-bottom-color:#F0C040;background:rgba(240,192,64,0.06);}
 
 /* ── panels ── */
 .panel{display:none;padding:20px 16px}
@@ -344,7 +348,7 @@ min-height:16px;
   <div class="form-row" style="align-items:flex-end">
     <div class="form-group" style="flex:2 1 200px">
       <label>Location / Place</label>
-      <input type="text" id="p-place" placeholder="e.g. Kathmandu, Pokhara, Mumbai..." value="Kathmandu" oninput="clearLocationP()"/>
+      <input type="text" id="p-place" placeholder="e.g. Kathmandu, Pokhara, Dubai..." value="Kathmandu" oninput="clearLocationP()" list="city-datalist"/>
     </div>
     <div class="form-group" style="flex:0 0 auto">
       <button class="btn btn-outline" onclick="lookupLocationP()" id="p-lookup-btn" style="width:100%;margin-top:0">🔍 Lookup</button>
@@ -378,7 +382,7 @@ min-height:16px;
   <div class="form-row" style="align-items:flex-end">
     <div class="form-group" style="flex:2 1 200px">
       <label>Birth Place</label>
-      <input type="text" id="k-place" placeholder="e.g. Kathmandu, Butwal, Lucknow..." oninput="clearLocationK()"/>
+      <input type="text" id="k-place" placeholder="e.g. Kathmandu, Butwal, Dubai..." oninput="clearLocationK()" list="city-datalist"/>
     </div>
     <div class="form-group" style="flex:0 0 auto">
       <button class="btn btn-outline" onclick="lookupLocationK()" id="k-lookup-btn" style="width:100%">🔍 Lookup</button>
@@ -474,7 +478,21 @@ min-height:16px;
 <div id="panel-rashifal" class="panel">
   <div class="section-title">दैनिक राशिफल — Daily Rashifal</div>
   <div class="note-box" style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:13px">
-    आजको ग्रह स्थिति अनुसार सबै १२ राशिको फल। चन्द्रमाको नक्षत्र, तिथि र दिनको स्वामी ग्रहमा आधारित।
+    आजको ग्रह स्थिति अनुसार सबै १२ राशिको फल। वास्तविक ग्रह गणना + AI विश्लेषणमा आधारित।
+  </div>
+
+  <!-- API Key setup -->
+
+  <div id="rf-key-section" style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:14px">
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:8px;text-transform:uppercase">Anthropic API Key (एक पटक राख्नुहोस्)</div>
+    <div style="display:flex;gap:8px">
+      <input type="password" id="rf-api-key" class="input" placeholder="sk-ant-..." style="flex:1;font-family:monospace;font-size:12px"/>
+      <button class="btn btn-ghost" onclick="saveApiKey()" style="white-space:nowrap">Save</button>
+      <button class="btn btn-ghost" onclick="clearApiKey()" style="white-space:nowrap;font-size:11px">Clear</button>
+    </div>
+    <div id="rf-key-status" style="font-size:11px;color:var(--text3);margin-top:6px;font-family:var(--font-mono)">
+      API key राखिएको छैन — <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a> बाट key लिनुहोस्
+    </div>
   </div>
 
   <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
@@ -488,15 +506,8 @@ min-height:16px;
   </div>
 
   <div id="rf-planet-summary" style="display:none;background:var(--card-bg);border:1px solid var(--dim);border-radius:6px;padding:12px 14px;margin-bottom:16px;font-family:'EB Garamond',serif;font-size:13px;line-height:1.8"></div>
-
-  <!-- Rashi grid -->
-
   <div id="rf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
-
-  <div id="rf-note" style="display:none;margin-top:14px;font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;line-height:1.7;padding-top:10px;border-top:1px solid var(--dim)">
-    स्रोत: परम्परागत जोतिष शास्त्र — चन्द्र नक्षत्र फल (Brihat Parashara Hora Shastra), वार फल, तिथि फल।<br/>
-    यो राशिफल रेकर्ड गर्न सजिलो होस् भनेर बनाइएको हो। प्रत्येक राशि कार्डमा क्लिक गर्नुहोस् भने टेम्पलेटमा पठाउन सकिन्छ।
-  </div>
+  <div id="rf-note" style="display:none;margin-top:14px;font-size:11px;color:var(--muted);font-family:'EB Garamond',serif;font-style:italic;line-height:1.7;padding-top:10px;border-top:1px solid var(--dim)"></div>
 </div>
 
 <!-- ══════════════════ MUHURTA ══════════════════ -->
@@ -1219,70 +1230,242 @@ function getToneForRashi(rashiIdx, moonSid, sunSid, varaIdx, tithiIdx){
   return isShukla?3:2;
 }
 
-function calcRashifal(){
+// ── API Key management ──
+function saveApiKey(){
+  const key = document.getElementById('rf-api-key').value.trim();
+  if(!key){ showToast('Key खाली छ।'); return; }
+  localStorage.setItem('wpos_anthropic_key', key);
+  document.getElementById('rf-api-key').value = '';
+  updateKeyStatus();
+  showToast('API key सुरक्षित गरियो। ✓');
+}
+function clearApiKey(){
+  localStorage.removeItem('wpos_anthropic_key');
+  updateKeyStatus();
+  showToast('API key हटाइयो।');
+}
+function getApiKey(){ return localStorage.getItem('wpos_anthropic_key') || ''; }
+function updateKeyStatus(){
+  const el = document.getElementById('rf-key-status');
+  if(!el) return;
+  const key = getApiKey();
+  if(key){
+    el.innerHTML = `<span style="color:#60D080">✓ API key राखिएको छ</span> (sk-ant-...${key.slice(-6)})`;
+  } else {
+    el.innerHTML = `API key राखिएको छैन — <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a> बाट key लिनुहोस्`;
+  }
+}
+
+async function calcRashifal(){
   const dateStr=document.getElementById('rf-date').value;
   if(!dateStr)return;
-  const[y,m,d]=dateStr.split('-').map(Number);
-  const jd=toJD(y,m,d,0,45); // Nepal UTC+5:45
-  const sunSid=sidLon(sunLon(jd),jd);
-  const moonSid=sidLon(moonLon(jd),jd);
-  const moonRashi=lonToRashi(moonSid);
-  const moonNak=lonToNakshatra(moonSid);
-  const varaIdx=Math.floor(jd+1.5)%7;
-  const tithiIdx=Math.floor(normalize(moonSid-sunSid)/12);
-  const paksha=tithiIdx<15?'शुक्ल पक्ष':'कृष्ण पक्ष';
-  const bs=jdToBs(jd);
-  const bsStr=`${bs.year} ${BS_MONTH_NAMES[bs.month-1]} ${bs.day}`;
 
-  // Planet summary
-  document.getElementById('rf-planet-summary').style.display='block';
-  document.getElementById('rf-planet-summary').innerHTML=`
-    <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--gold);margin-bottom:8px">आजको ग्रह स्थिति — ${bsStr}</div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">
-      <span>☽ <strong style="color:#C0C8FF">चन्द्र:</strong> ${RASHIS[moonRashi]} — ${NAKSHATRAS[moonNak][0]}</span>
-      <span>☉ <strong style="color:#FFA030">सूर्य:</strong> ${RASHIS[lonToRashi(sunSid)]}</span>
-      <span>📅 <strong style="color:var(--gold2)">वार:</strong> ${VARA_NAMES[varaIdx]}</span>
-      <span>🌙 <strong style="color:var(--muted)">पक्ष:</strong> ${paksha}</span>
+  const[y,m,d]=dateStr.split('-').map(Number);
+  const jd=toJD(y,m,d,0,45); // Nepal UTC+5:45, sunrise reference
+
+  // ── Calculate all planetary positions for this day ──
+  const sunSid    = sidLon(sunLon(jd),jd);
+  const moonSid   = sidLon(moonLon(jd),jd);
+  const marsSid   = sidLon(planetLon(jd,'Mars'),jd);
+  const mercSid   = sidLon(planetLon(jd,'Mercury'),jd);
+  const jupSid    = sidLon(planetLon(jd,'Jupiter'),jd);
+  const venSid    = sidLon(planetLon(jd,'Venus'),jd);
+  const satSid    = sidLon(planetLon(jd,'Saturn'),jd);
+  const rahuSid   = sidLon(planetLon(jd,'Rahu'),jd);
+  const ketuSid   = normalize(rahuSid+180);
+
+  const moonRashi  = lonToRashi(moonSid);
+  const moonNak    = lonToNakshatra(moonSid);
+  const sunRashi   = lonToRashi(sunSid);
+  const varaIdx    = Math.floor(jd+1.5)%7;
+  const tithiIdx   = Math.floor(normalize(moonSid-sunSid)/12);
+  const paksha     = tithiIdx<15?'शुक्ल पक्ष':'कृष्ण पक्ष';
+  const tithiNum   = tithiIdx%15;
+  const yogaIdx    = Math.floor(normalize(sunSid+moonSid)/(360/27));
+  const bs         = jdToBs(jd);
+  const bsStr      = `${bs.year} ${BS_MONTH_NAMES[bs.month-1]} ${bs.day}`;
+
+  // ── Show planet summary ──
+  const sumEl = document.getElementById('rf-planet-summary');
+  sumEl.style.display='block';
+  sumEl.innerHTML=`
+    <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--gold);margin-bottom:8px">ग्रह स्थिति — ${bsStr} · ${VARA_NAMES[varaIdx]}</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;font-family:'Tiro Devanagari Sanskrit',serif">
+      <span>☽ चन्द्र: <strong>${RASHIS[moonRashi]}</strong> (${NAKSHATRAS[moonNak][0]})</span>
+      <span>☉ सूर्य: <strong>${RASHIS[sunRashi]}</strong></span>
+      <span>♃ बृहस्पति: <strong>${RASHIS[lonToRashi(jupSid)]}</strong></span>
+      <span>♄ शनि: <strong>${RASHIS[lonToRashi(satSid)]}</strong></span>
+      <span>♂ मंगल: <strong>${RASHIS[lonToRashi(marsSid)]}</strong></span>
+      <span>☊ राहु: <strong>${RASHIS[lonToRashi(rahuSid)]}</strong></span>
     </div>`;
 
-  // Generate all 12 rashifal cards
-  const grid=document.getElementById('rf-grid');
-  grid.innerHTML='';
-  const tones=['⚠️ कठिन','😐 सामान्य','🙂 ठीक','✨ राम्रो','🌟 उत्कृष्ट'];
-  const toneColors=['#FF6060','#A090C0','#C0D0FF','#80D080','#FFD060'];
+  // ── Show loading state ──
+  const grid = document.getElementById('rf-grid');
+  grid.innerHTML=`
+    <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:'Tiro Devanagari Sanskrit',serif;font-size:14px;color:var(--muted)">
+      <div style="font-size:28px;margin-bottom:12px">🔮</div>
+      AI द्वारा आजको राशिफल तयार हुँदैछ...<br/>
+      <span style="font-size:11px">ग्रह स्थिति विश्लेषण भइरहेको छ</span>
+    </div>`;
+  document.getElementById('rf-note').style.display='none';
 
-  for(let i=0;i<12;i++){
-    const tone=getToneForRashi(i,moonSid,sunSid,varaIdx,tithiIdx);
-    const reading=RASHI_BASE_READING[i];
-    const vara=getVaraEffect(varaIdx,i);
-    // Pick reading variant based on tone for variety
-    const pick=Math.floor((jd+i)%5);
-    const card=document.createElement('div');
-    card.style.cssText=`background:var(--card-bg);border:1px solid var(--dim);border-radius:6px;padding:12px;cursor:pointer;transition:border-color 0.2s`;
-    card.onmouseover=function(){this.style.borderColor='var(--gold2)'};
-    card.onmouseout=function(){this.style.borderColor='var(--dim)'};
-    card.innerHTML=`
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div>
-          <span style="font-size:18px;margin-right:6px">${RASHI_SYM[i]}</span>
-          <span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:16px;color:var(--gold)">${RASHI_NP[i]}</span>
-          <span style="font-size:11px;color:var(--muted);margin-left:6px">${RASHI_EN[i]}</span>
+  // ── Build the prompt with real astronomical data ──
+  const prompt = `तपाईं एक अनुभवी वैदिक ज्योतिषी हुनुहुन्छ। आजको ग्रह स्थितिको आधारमा सबै १२ राशिको दैनिक राशिफल नेपाली भाषामा लेख्नुहोस्।
+
+आजको पञ्चाङ्ग (${bsStr}):
+- वार: ${VARA_NAMES[varaIdx]} (स्वामी: ${['रवि','चन्द्र','मंगल','बुध','बृहस्पति','शुक्र','शनि'][varaIdx]})
+- तिथि: ${TITHI_NAMES[tithiNum]} (${paksha})
+- योग: ${YOGA_NAMES[yogaIdx]}
+- चन्द्र: ${RASHIS[moonRashi]} राशि — ${NAKSHATRAS[moonNak][0]} नक्षत्र (${NAKSHATRAS[moonNak][1]})
+
+ग्रह स्थिति (सिद्धान्त):
+- सूर्य: ${RASHIS[sunRashi]} (${sunSid.toFixed(1)}°)
+- चन्द्र: ${RASHIS[moonRashi]} (${moonSid.toFixed(1)}°)
+- मंगल: ${RASHIS[lonToRashi(marsSid)]} (${marsSid.toFixed(1)}°)
+- बुध: ${RASHIS[lonToRashi(mercSid)]} (${mercSid.toFixed(1)}°)
+- बृहस्पति: ${RASHIS[lonToRashi(jupSid)]} (${jupSid.toFixed(1)}°)
+- शुक्र: ${RASHIS[lonToRashi(venSid)]} (${venSid.toFixed(1)}°)
+- शनि: ${RASHIS[lonToRashi(satSid)]} (${satSid.toFixed(1)}°)
+- राहु: ${RASHIS[lonToRashi(rahuSid)]} / केतु: ${RASHIS[lonToRashi(ketuSid)]}
+
+प्रत्येक राशिका लागि:
+- चन्द्रमाको स्थितिबाट तारा चक्र (जन्म, सम्पत, विपत, क्षेम, प्रत्यरि, साधक, वध, मित्र, परम मित्र) गणना गर्नुहोस्
+- वार स्वामी र तिथि फलको विचार गर्नुहोस्
+- बृहस्पति र शनिको गोचर प्रभाव हेर्नुहोस्
+
+JSON format मा जवाफ दिनुहोस् — अन्य कुनै text नलेख्नुहोस्:
+{
+  "rashifal": [
+    {
+      "rashi": "मेष",
+      "tone": 3,
+      "general": "सामान्य जीवन फल (२ वाक्य, नेपालीमा)",
+      "career": "कार्य/व्यापार फल (१ वाक्य)",
+      "love": "प्रेम/सम्बन्ध फल (१ वाक्य)",
+      "health": "स्वास्थ्य फल (१ वाक्य)",
+      "lucky_color": "रंग",
+      "lucky_number": "अंक"
+    }
+  ]
+}
+
+tone: 1=कठिन, 2=सामान्य, 3=ठीक, 4=राम्रो, 5=उत्कृष्ट
+
+१२ राशि क्रमशः: मेष, वृष, मिथुन, कर्क, सिंह, कन्या, तुला, वृश्चिक, धनु, मकर, कुम्भ, मीन`;
+
+  try {
+    const apiKey = getApiKey();
+    if(!apiKey){
+      grid.innerHTML=`
+        <div style="grid-column:1/-1;text-align:center;padding:32px;font-family:'Tiro Devanagari Sanskrit',serif">
+          <div style="font-size:24px;margin-bottom:10px">🔑</div>
+          <div style="color:var(--muted);font-size:14px;line-height:1.9">
+            API key चाहिन्छ।<br/>
+            माथिको बक्समा आफ्नो Anthropic API key राख्नुहोस्।<br/>
+            <span style="font-size:11px;color:var(--text3)">Free key: console.anthropic.com</span>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const headers = { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' };
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if(!res.ok) throw new Error('API error '+res.status);
+    const data = await res.json();
+    const text = data.content[0].text;
+
+    // Parse JSON — strip any markdown fences if present
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    const readings = parsed.rashifal;
+
+    // ── Render the 12 cards ──
+    const tones      = ['','⚠️ कठिन','😐 सामान्य','🙂 ठीक','✨ राम्रो','🌟 उत्कृष्ट'];
+    const toneColors = ['','#FF6060','#A090C0','#C0D0FF','#80D080','#FFD060'];
+    const rashiSymbols = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+    const rashiEN      = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+
+    grid.innerHTML = '';
+    readings.forEach((r, i) => {
+      const t = Math.min(5, Math.max(1, r.tone||3));
+      const card = document.createElement('div');
+      card.style.cssText = `background:var(--card-bg);border:1px solid var(--dim);border-radius:6px;padding:12px;cursor:pointer;transition:border-color 0.2s`;
+      card.onmouseover = function(){ this.style.borderColor='var(--gold2)'; };
+      card.onmouseout  = function(){ this.style.borderColor='var(--dim)'; };
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div>
+            <span style="font-size:18px;margin-right:6px">${rashiSymbols[i]}</span>
+            <span style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:16px;color:var(--gold)">${r.rashi}</span>
+            <span style="font-size:11px;color:var(--muted);margin-left:6px">${rashiEN[i]}</span>
+          </div>
+          <span style="font-size:11px;color:${toneColors[t]};background:${toneColors[t]}18;padding:2px 8px;border-radius:3px;white-space:nowrap">${tones[t]}</span>
         </div>
-        <span style="font-size:11px;color:${toneColors[tone]};background:${toneColors[tone]}18;padding:2px 8px;border-radius:3px;white-space:nowrap">${tones[tone]}</span>
-      </div>
-      <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:13px;color:var(--text);line-height:1.7;margin-bottom:8px">${reading.g[pick]}</div>
-      <div style="font-size:12px;line-height:1.7;font-family:'Tiro Devanagari Sanskrit',serif">
-        <div style="margin-bottom:3px"><span style="color:var(--gold2)">💼 कार्य:</span> <span style="color:var(--text)">${reading.c[pick]}</span></div>
-        <div style="margin-bottom:3px"><span style="color:var(--gold2)">❤️ सम्बन्ध:</span> <span style="color:var(--text)">${reading.l[pick]}</span></div>
-        <div style="margin-bottom:3px"><span style="color:var(--gold2)">🌿 स्वास्थ्य:</span> <span style="color:var(--text)">${reading.h[pick]}</span></div>
-      </div>
-      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--muted)">🎨 ${reading.lucky[0]} &nbsp;|&nbsp; 🔢 ${reading.lucky[1]} &nbsp;|&nbsp; 📅 ${reading.lucky[2]}</span>
-        <button onclick="rfCopyToTemplate(${i})" style="background:var(--gold2);color:#1A0E00;border:none;border-radius:3px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:'Philosopher',serif;font-weight:700">📋 Template</button>
+        <div style="font-family:'Tiro Devanagari Sanskrit',serif;font-size:13px;color:var(--text);line-height:1.75;margin-bottom:8px">${r.general}</div>
+        <div style="font-size:12px;line-height:1.75;font-family:'Tiro Devanagari Sanskrit',serif">
+          <div style="margin-bottom:3px"><span style="color:var(--gold2)">💼 कार्य:</span> <span style="color:var(--text)">${r.career}</span></div>
+          <div style="margin-bottom:3px"><span style="color:var(--gold2)">❤️ सम्बन्ध:</span> <span style="color:var(--text)">${r.love}</span></div>
+          <div style="margin-bottom:3px"><span style="color:var(--gold2)">🌿 स्वास्थ्य:</span> <span style="color:var(--text)">${r.health}</span></div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--dim);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:11px;color:var(--muted)">🎨 ${r.lucky_color} &nbsp;|&nbsp; 🔢 ${r.lucky_number}</span>
+          <button onclick="rfCopyToTemplateAI(${i},this)" style="background:var(--gold2);color:#1A0E00;border:none;border-radius:3px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:'Philosopher',serif;font-weight:700">📋 Template</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    // Store for template copy
+    window._rfLastReadings = readings;
+    window._rfLastDate = bsStr;
+
+    document.getElementById('rf-note').style.display='block';
+    document.getElementById('rf-note').innerHTML=`
+      <span style="font-family:'Tiro Devanagari Sanskrit',serif">
+        स्रोत: वास्तविक ग्रह गणना (Jean Meeus) + Extended Surya Siddhanta Ayanamsha (24°33'29") · AI विश्लेषण: Claude Haiku<br/>
+        आजको चन्द्र नक्षत्र: ${NAKSHATRAS[moonNak][0]} (${RASHIS[moonRashi]}) · तारा चक्र र गोचर प्रभावमा आधारित।
+      </span>`;
+
+  } catch(err) {
+    grid.innerHTML=`
+      <div style="grid-column:1/-1;text-align:center;padding:32px;font-family:'Tiro Devanagari Sanskrit',serif">
+        <div style="font-size:24px;margin-bottom:10px">⚠️</div>
+        <div style="color:var(--muted);font-size:13px;line-height:1.8">
+          राशिफल लोड हुन सकेन।<br/>
+          इन्टरनेट जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।<br/>
+          <span style="font-size:11px;color:var(--text3)">${err.message}</span>
+        </div>
+        <button onclick="calcRashifal()" style="margin-top:12px;padding:8px 20px;background:var(--gold);color:#1A0E00;border:none;border-radius:4px;cursor:pointer;font-family:'Philosopher',serif;font-weight:700">↻ पुनः प्रयास</button>
       </div>`;
-    grid.appendChild(card);
   }
-  document.getElementById('rf-note').style.display='block';
+}
+
+function rfCopyToTemplateAI(idx, btn) {
+  const readings = window._rfLastReadings;
+  if(!readings || !readings[idx]) return;
+  const r = readings[idx];
+  const title = `${r.rashi} राशिफल`;
+  const body = `${r.general}\n\n💼 ${r.career}\n❤️ ${r.love}\n🌿 ${r.health}\n\n🍀 शुभ रंग: ${r.lucky_color} | अंक: ${r.lucky_number}`;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-templates').classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>{if(t.textContent.includes('Templates'))t.classList.add('active');});
+  setTimeout(()=>{
+    if(window.tmplInit) window.tmplInit();
+    const tf = document.getElementById('tmpl-title');
+    const bf = document.getElementById('tmpl-body');
+    if(tf) tf.value = title;
+    if(bf) bf.value = body;
+  }, 200);
 }
 
 function rfCopyToTemplate(rashiIdx){
@@ -1321,12 +1504,7 @@ function rfCopyToTemplate(rashiIdx){
 window.addEventListener('DOMContentLoaded',()=>{
   const rfDate=document.getElementById('rf-date');
   if(rfDate)rfDate.value=new Date().toISOString().slice(0,10);
-});
-
-// Auto-set date on panel init
-window.addEventListener('DOMContentLoaded',()=>{
-  const rfDate=document.getElementById('rf-date');
-  if(rfDate)rfDate.value=new Date().toISOString().slice(0,10);
+  updateKeyStatus();
 });
 
 // ═══════════════════════════════════════════════
@@ -2385,66 +2563,134 @@ function tzLabel(offset){
   return`UTC${sign}${h}:${String(m).padStart(2,'0')}`;
 }
 
-async function geocodePlace(place){
-  const url=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json&limit=3&addressdetails=1`;
-  const res=await fetch(url,{headers:{'Accept-Language':'en','User-Agent':'JyotishDashboard/1.0'}});
-  if(!res.ok)throw new Error('Network error');
-  const data=await res.json();
-  if(!data.length)throw new Error('Place not found');
-  return data[0]; // best match
+// ── Local city database — no external API needed ──
+// Nepal cities + major world cities for diaspora clients
+const CITY_DB = [
+  // Nepal — comprehensive
+  {n:'Kathmandu',lat:27.7172,lon:85.3240,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Pokhara',lat:28.2096,lon:83.9856,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Lalitpur / Patan',lat:27.6644,lon:85.3188,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Bhaktapur',lat:27.6710,lon:85.4298,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Biratnagar',lat:26.4525,lon:87.2718,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Birgunj',lat:27.0104,lon:84.8771,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Dharan',lat:26.8120,lon:87.2836,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Butwal',lat:27.7006,lon:83.4483,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Hetauda',lat:27.4167,lon:85.0333,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Janakpur',lat:26.7288,lon:85.9264,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Dhangadhi',lat:28.6896,lon:80.5997,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Nepalgunj',lat:28.0500,lon:81.6167,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Itahari',lat:26.6641,lon:87.2797,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Gorkha',lat:28.0000,lon:84.6333,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Lumbini',lat:27.4833,lon:83.2769,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Chitwan / Bharatpur',lat:27.6833,lon:84.4333,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Dang / Tulsipur',lat:28.1333,lon:82.3000,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Ilam',lat:26.9123,lon:87.9258,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Baglung',lat:28.2667,lon:83.5833,tz:5.75,c:'🇳🇵 Nepal'},
+  {n:'Mustang / Jomsom',lat:28.7808,lon:83.7290,tz:5.75,c:'🇳🇵 Nepal'},
+  // India
+  {n:'Mumbai',lat:19.0760,lon:72.8777,tz:5.5,c:'🇮🇳 India'},
+  {n:'Delhi / New Delhi',lat:28.6139,lon:77.2090,tz:5.5,c:'🇮🇳 India'},
+  {n:'Kolkata',lat:22.5726,lon:88.3639,tz:5.5,c:'🇮🇳 India'},
+  {n:'Bangalore',lat:12.9716,lon:77.5946,tz:5.5,c:'🇮🇳 India'},
+  {n:'Chennai',lat:13.0827,lon:80.2707,tz:5.5,c:'🇮🇳 India'},
+  {n:'Varanasi',lat:25.3176,lon:82.9739,tz:5.5,c:'🇮🇳 India'},
+  // USA
+  {n:'New York',lat:40.7128,lon:-74.0060,tz:-5,c:'🇺🇸 USA'},
+  {n:'Los Angeles',lat:34.0522,lon:-118.2437,tz:-8,c:'🇺🇸 USA'},
+  {n:'Chicago',lat:41.8781,lon:-87.6298,tz:-6,c:'🇺🇸 USA'},
+  {n:'Dallas / TX',lat:32.7767,lon:-96.7970,tz:-6,c:'🇺🇸 USA'},
+  {n:'Houston',lat:29.7604,lon:-95.3698,tz:-6,c:'🇺🇸 USA'},
+  {n:'Washington DC',lat:38.9072,lon:-77.0369,tz:-5,c:'🇺🇸 USA'},
+  {n:'San Francisco',lat:37.7749,lon:-122.4194,tz:-8,c:'🇺🇸 USA'},
+  // UK
+  {n:'London',lat:51.5074,lon:-0.1278,tz:0,c:'🇬🇧 UK'},
+  {n:'Birmingham UK',lat:52.4862,lon:-1.8904,tz:0,c:'🇬🇧 UK'},
+  // Australia
+  {n:'Sydney',lat:-33.8688,lon:151.2093,tz:10,c:'🇦🇺 Australia'},
+  {n:'Melbourne',lat:-37.8136,lon:144.9631,tz:10,c:'🇦🇺 Australia'},
+  // UAE / Middle East
+  {n:'Dubai',lat:25.2048,lon:55.2708,tz:4,c:'🇦🇪 UAE'},
+  {n:'Abu Dhabi',lat:24.4539,lon:54.3773,tz:4,c:'🇦🇪 UAE'},
+  {n:'Doha / Qatar',lat:25.2854,lon:51.5310,tz:3,c:'🇶🇦 Qatar'},
+  {n:'Riyadh',lat:24.7136,lon:46.6753,tz:3,c:'🇸🇦 Saudi Arabia'},
+  // Canada
+  {n:'Toronto',lat:43.6532,lon:-79.3832,tz:-5,c:'🇨🇦 Canada'},
+  {n:'Vancouver',lat:49.2827,lon:-123.1207,tz:-8,c:'🇨🇦 Canada'},
+  // Japan / Korea for diaspora
+  {n:'Tokyo',lat:35.6762,lon:139.6503,tz:9,c:'🇯🇵 Japan'},
+  {n:'Seoul',lat:37.5665,lon:126.9780,tz:9,c:'🇰🇷 Korea'},
+];
+
+function geocodePlace(place){
+  const q = place.toLowerCase().trim();
+  // Search by name match
+  const results = CITY_DB.filter(c =>
+    c.n.toLowerCase().includes(q) ||
+    q.split(/[\s,]+/).some(word => word.length > 2 && c.n.toLowerCase().includes(word))
+  );
+  if(!results.length) throw new Error(`"${place}" भेटिएन — तलको सूचीबाट छान्नुहोस्`);
+  return results[0];
 }
 
-// ── Panchang location lookup ──
-async function lookupLocationP(){
-  const place=document.getElementById('p-place').value.trim();
-  if(!place){document.getElementById('p-location-status').textContent='Please enter a place name.';return;}
-  const btn=document.getElementById('p-lookup-btn');
-  const status=document.getElementById('p-location-status');
-  btn.textContent='⏳'; btn.disabled=true; status.textContent='Looking up...';
-  try{
-    const r=await geocodePlace(place);
-    const lat=parseFloat(r.lat), lon=parseFloat(r.lon);
-    const tz=tzFromLon(lon);
-    document.getElementById('p-lat').value=lat.toFixed(4);
-    document.getElementById('p-lon').value=lon.toFixed(4);
-    document.getElementById('p-tz').value=tz;
-    const label=r.display_name.split(',').slice(0,3).join(', ');
-    status.innerHTML=`<span style="color:var(--green)">✓</span> ${label} · ${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E · ${tzLabel(tz)}`;
-  }catch(e){
-    status.innerHTML=`<span style="color:var(--red)">✗</span> ${e.message} — try a more specific name`;
+// Show city suggestions as datalist
+function buildCityDatalist(){
+  let dl = document.getElementById('city-datalist');
+  if(!dl){
+    dl = document.createElement('datalist');
+    dl.id = 'city-datalist';
+    document.body.appendChild(dl);
   }
-  btn.textContent='🔍 Lookup'; btn.disabled=false;
+  dl.innerHTML = CITY_DB.map(c=>`<option value="${c.n}">${c.c}</option>`).join('');
+}
+
+window.addEventListener('DOMContentLoaded', buildCityDatalist);
+
+// ── Panchang location lookup ──
+function lookupLocationP(){
+  const place=document.getElementById('p-place').value.trim();
+  const status=document.getElementById('p-location-status');
+  if(!place){status.textContent='स्थान नाम लेख्नुहोस्।';return;}
+  try{
+    const r=geocodePlace(place);
+    document.getElementById('p-lat').value=r.lat.toFixed(4);
+    document.getElementById('p-lon').value=r.lon.toFixed(4);
+    document.getElementById('p-tz').value=r.tz;
+    status.innerHTML=`<span style="color:#60D080">✓</span> ${r.n} ${r.c} · ${r.lat.toFixed(3)}°N, ${r.lon.toFixed(3)}°E · UTC+${r.tz}`;
+  }catch(e){
+    status.innerHTML=`<span style="color:#FF6060">✗</span> ${e.message}`;
+  }
 }
 function clearLocationP(){document.getElementById('p-location-status').textContent='';}
 
 // ── Kundali location lookup ──
-async function lookupLocationK(){
+function lookupLocationK(){
   const place=document.getElementById('k-place').value.trim();
-  if(!place){document.getElementById('k-location-status').textContent='Please enter a birth place.';return;}
-  const btn=document.getElementById('k-lookup-btn');
   const status=document.getElementById('k-location-status');
-  btn.textContent='⏳'; btn.disabled=true; status.textContent='Looking up...';
+  if(!place){status.textContent='जन्म स्थान लेख्नुहोस्।';return;}
   try{
-    const r=await geocodePlace(place);
-    const lat=parseFloat(r.lat), lon=parseFloat(r.lon);
-    const tz=tzFromLon(lon);
-    // Store in hidden fields
-    document.getElementById('k-lat').value=lat.toFixed(4);
-    document.getElementById('k-lon').value=lon.toFixed(4);
-    document.getElementById('k-tz').value=tz;
-    document.getElementById('k-tz-override').value=tz;
-    // Show details
-    document.getElementById('k-lat-show').textContent=lat.toFixed(4)+'° N';
-    document.getElementById('k-lon-show').textContent=lon.toFixed(4)+'° E';
-    document.getElementById('k-tz-show').textContent=tzLabel(tz);
-    document.getElementById('k-location-details').style.display='block';
-    const label=r.display_name.split(',').slice(0,3).join(', ');
-    status.innerHTML=`<span style="color:var(--green)">✓</span> ${label}`;
+    const r=geocodePlace(place);
+    document.getElementById('k-lat').value=r.lat.toFixed(4);
+    document.getElementById('k-lon').value=r.lon.toFixed(4);
+    document.getElementById('k-tz').value=r.tz;
+    status.innerHTML=`<span style="color:#60D080">✓</span> ${r.n} ${r.c} · ${r.lat.toFixed(3)}°N, ${r.lon.toFixed(3)}°E · UTC+${r.tz}`;
   }catch(e){
-    status.innerHTML=`<span style="color:var(--red)">✗</span> ${e.message} — try a different spelling`;
+    status.innerHTML=`<span style="color:#FF6060">✗</span> ${e.message}`;
   }
-  btn.textContent='🔍 Lookup'; btn.disabled=false;
 }
+  try{
+    const r=geocodePlace(place);
+    document.getElementById('k-lat').value=r.lat.toFixed(4);
+    document.getElementById('k-lon').value=r.lon.toFixed(4);
+    document.getElementById('k-tz').value=r.tz;
+    document.getElementById('k-tz-override').value=r.tz;
+    document.getElementById('k-lat-show').textContent=r.lat.toFixed(4)+'° N';
+    document.getElementById('k-lon-show').textContent=r.lon.toFixed(4)+'° E';
+    document.getElementById('k-tz-show').textContent=tzLabel(r.tz);
+    document.getElementById('k-location-details').style.display='block';
+    status.innerHTML=`<span style="color:#60D080">✓</span> ${r.n} ${r.c}`;
+  }catch(e){
+    status.innerHTML=`<span style="color:#FF6060">✗</span> ${e.message}`;
+  }
 function clearLocationK(){
   document.getElementById('k-location-status').textContent='';
   document.getElementById('k-location-details').style.display='none';
